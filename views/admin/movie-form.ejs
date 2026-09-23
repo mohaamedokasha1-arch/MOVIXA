@@ -1,0 +1,150 @@
+<div class="page-actions">
+  <h1 class="admin-h1"><%= isEdit ? 'Edit Movie' : 'Add New Movie' %></h1>
+  <div class="btn-row">
+    <% if (isEdit) { %><a href="/movie/<%= movie.slug %>" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">View on Site ↗</a><% } %>
+    <a href="/admin/movies" class="btn btn-ghost btn-sm">← Back to Movies</a>
+  </div>
+</div>
+
+<form method="POST" enctype="multipart/form-data" class="content-form" id="contentForm">
+  <div class="form-grid">
+    <div class="form-main">
+      <fieldset class="form-card">
+        <legend>Basic Information</legend>
+        <div class="form-group"><label>Title *</label><input type="text" name="title" value="<%= movie.title %>" required maxlength="200" data-slug-source></div>
+        <div class="form-row">
+          <div class="form-group"><label>Original Title</label><input type="text" name="original_title" value="<%= movie.original_title %>" maxlength="200"></div>
+          <div class="form-group"><label>Slug</label><input type="text" name="slug" value="<%= movie.slug %>" maxlength="200" data-slug-target placeholder="auto-generated"></div>
+        </div>
+        <div class="form-group"><label>Description</label><textarea name="description" rows="8" class="rich" placeholder="Full description. Basic HTML allowed: <p> <strong> <em> <ul> <li> <h2> <a>"><%= movie.description %></textarea></div>
+        <div class="form-group"><label>Short Description (max 200 chars)</label><textarea name="short_description" rows="2" maxlength="200" data-count="200"><%= movie.short_description %></textarea><small class="char-count"></small></div>
+      </fieldset>
+
+      <fieldset class="form-card">
+        <legend>Details</legend>
+        <div class="form-row">
+          <div class="form-group"><label>Release Year</label><input type="number" name="release_year" value="<%= movie.release_year %>" min="1880" max="2100"></div>
+          <div class="form-group"><label>Runtime (minutes)</label><input type="number" name="runtime" value="<%= movie.runtime %>" min="1" max="2000"></div>
+          <div class="form-group"><label>Rating (0–10)</label><input type="number" name="rating" value="<%= movie.rating %>" min="0" max="10" step="0.1"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Language</label><input type="text" name="language" value="<%= movie.language %>" maxlength="60" placeholder="English"></div>
+          <div class="form-group"><label>Country</label><input type="text" name="country" value="<%= movie.country %>" maxlength="60"></div>
+          <div class="form-group"><label>Director</label><input type="text" name="director" value="<%= movie.director %>" maxlength="200"></div>
+        </div>
+        <div class="form-group"><label>Tags (comma-separated)</label><input type="text" name="tags" value="<%= movie.tags %>" maxlength="300"></div>
+      </fieldset>
+
+      <fieldset class="form-card">
+        <legend>Media</legend>
+        <div class="form-group"><label>Poster Image</label>
+          <% if (movie.poster_image) { %><img class="form-preview" src="<%= movie.poster_image %>" alt="Current poster"><% } %>
+          <input type="file" name="poster_file" accept="image/*">
+          <input type="text" name="poster_image" value="<%= movie.poster_image %>" placeholder="...or paste image URL" maxlength="500">
+        </div>
+        <div class="form-group"><label>Backdrop Image</label>
+          <% if (movie.backdrop_image) { %><img class="form-preview wide" src="<%= movie.backdrop_image %>" alt="Current backdrop"><% } %>
+          <input type="file" name="backdrop_file" accept="image/*">
+          <input type="text" name="backdrop_image" value="<%= movie.backdrop_image %>" placeholder="...or paste image URL" maxlength="500">
+        </div>
+        <div class="form-group"><label>Trailer URL (YouTube/Vimeo)</label><input type="url" name="trailer_url" value="<%= movie.trailer_url %>" maxlength="500"></div>
+      </fieldset>
+
+      <fieldset class="form-card">
+        <legend>Video Source (Embedded Player)</legend>
+        <p class="form-note">📺 The movie page streams the video directly from the provider — MOVIXA never downloads, copies or stores video files. Only embed videos you have permission or authorization to display.</p>
+        <div class="form-row">
+          <div class="form-group"><label for="videoProvider">Video Source</label>
+            <select name="video_provider" id="videoProvider">
+              <% videoOptions.forEach(function(o) { %>
+              <option value="<%= o.id %>" <%= movie.video_provider === o.id ? 'selected' : '' %> data-label="<%= o.inputLabel || '' %>" data-hint="<%= o.hint || '' %>"><%= o.label %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="form-group" id="videoInputGroup"><label for="videoInput" id="videoInputLabel">Video ID or Embed URL</label>
+            <div class="video-input-row">
+              <input type="text" name="video_input" id="videoInput" value="<%= movie.video_input || '' %>" maxlength="2000" placeholder="e.g. x8abc12 or https://..." autocomplete="off">
+              <button type="button" class="btn btn-secondary btn-sm" id="videoPreviewBtn">Preview</button>
+            </div>
+            <small class="muted" id="videoInputHint"></small>
+            <div class="video-preview-box" id="videoPreviewBox" hidden>
+              <div class="video-preview-frame" id="videoPreviewFrame"></div>
+              <p class="video-preview-error" id="videoPreviewError" hidden></p>
+              <small class="muted" id="videoPreviewUrl"></small>
+            </div>
+          </div>
+        </div>
+        <% if (movie.video_embed_url) { %>
+        <div class="form-group"><label>Current Embed URL (replace above or choose “No embedded player” to remove)</label>
+          <input type="text" value="<%= movie.video_embed_url %>" readonly>
+          <small><a href="<%= movie.video_embed_url %>" target="_blank" rel="noopener">Test embed URL ↗</a></small>
+        </div>
+        <% } %>
+      </fieldset>
+
+      <fieldset class="form-card">
+        <legend>Legal Source</legend>
+        <p class="form-note">⚠️ Only add content you have rights to distribute, or link to legal official sources.</p>
+        <div class="form-row">
+          <div class="form-group"><label>Official Watch URL *</label><input type="url" name="official_watch_url" value="<%= movie.official_watch_url %>" maxlength="500" placeholder="https://..."></div>
+          <div class="form-group"><label>Official Source Name</label><input type="text" name="official_source_name" value="<%= movie.official_source_name %>" maxlength="100" placeholder="YouTube, Vimeo, Official Site..."></div>
+        </div>
+      </fieldset>
+
+      <fieldset class="form-card">
+        <legend>SEO Settings</legend>
+        <div class="form-group"><label>SEO Title</label><input type="text" name="seo_title" value="<%= movie.seo_title %>" maxlength="200" placeholder="Defaults to movie title"></div>
+        <div class="form-group"><label>SEO Description (max 200 chars)</label><textarea name="seo_description" rows="2" maxlength="200" data-count="200"><%= movie.seo_description %></textarea><small class="char-count"></small></div>
+        <div class="form-group"><label>OG Image (defaults to backdrop)</label>
+          <input type="file" name="og_file" accept="image/*">
+          <input type="text" name="og_image" value="<%= movie.og_image %>" placeholder="...or paste image URL" maxlength="500">
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="form-side">
+      <fieldset class="form-card">
+        <legend>Publishing</legend>
+        <div class="form-group"><label>Status</label>
+          <label class="radio"><input type="radio" name="status" value="draft" <%= movie.status === 'draft' ? 'checked' : '' %>> Draft</label>
+          <label class="radio"><input type="radio" name="status" value="published" <%= movie.status === 'published' ? 'checked' : '' %>> Published</label>
+          <label class="radio"><input type="radio" name="status" value="archived" <%= movie.status === 'archived' ? 'checked' : '' %>> Archived</label>
+        </div>
+        <label class="check"><input type="checkbox" name="featured" value="1" <%= movie.featured ? 'checked' : '' %>> ⭐ Featured (homepage hero)</label>
+        <div class="publish-btns">
+          <button type="submit" name="save_and_view" value="1" class="btn btn-ghost btn-block">Save &amp; View</button>
+          <% if (!isEdit) { %><button type="submit" name="save_and_add" value="1" class="btn btn-ghost btn-block">Save &amp; Add Another</button><% } %>
+          <button type="submit" class="btn btn-primary btn-block btn-lg"><%= isEdit ? 'Update Movie' : 'Publish Movie' %></button>
+        </div>
+      </fieldset>
+
+      <fieldset class="form-card">
+        <legend>Genres</legend>
+        <div class="check-list">
+          <% allGenres.forEach(function(g) { %>
+          <label class="check"><input type="checkbox" name="genre_ids" value="<%= g.id %>" <%= selectedGenres.includes(g.id) ? 'checked' : '' %>> <%= g.name %></label>
+          <% }); %>
+        </div>
+      </fieldset>
+
+      <fieldset class="form-card">
+        <legend>Cast &amp; Crew</legend>
+        <div class="check-list cast-list">
+          <% allPeople.forEach(function(p) {
+            const sel = selectedCast.find(c => c.cast_id === p.id);
+          %>
+          <div class="cast-pick">
+            <label class="check"><input type="checkbox" name="cast_ids" value="<%= p.id %>" <%= sel ? 'checked' : '' %>> <%= p.name %> <small class="muted">(<%= p.role %>)</small></label>
+            <input type="text" name="character_<%= p.id %>" value="<%= sel ? sel.character_name : '' %>" placeholder="Character name" maxlength="120" class="cast-char">
+          </div>
+          <% }); %>
+          <% if (!allPeople.length) { %><p class="muted">No people yet. <a href="/admin/cast/new">Add someone →</a></p><% } %>
+        </div>
+        <div class="form-group"><label>Quick add person</label>
+          <input type="text" name="add_person_name" placeholder="Name" maxlength="120">
+          <select name="add_person_role"><option value="actor">Actor</option><option value="director">Director</option><option value="writer">Writer</option></select>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : (siteName + ' — Discover. Watch. Legally.') %></title>
+  <meta name="description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : settings.seo_default_description %>">
+  <meta name="robots" content="<%= typeof noIndex !== 'undefined' && noIndex ? 'noindex, follow' : 'index, follow' %>">
+  <% if (typeof canonical !== 'undefined' && canonical) { %><link rel="canonical" href="<%= canonical %>"><% } %>
+  <meta name="theme-color" content="#0a0a0a">
+  <% if (settings.favicon) { %><link rel="icon" href="<%= settings.favicon %>"><% } else { %><link rel="icon" type="image/svg+xml" href="/favicon.svg"><% } %>
+  <!-- Open Graph -->
+  <meta property="og:site_name" content="<%= siteName %>">
+  <meta property="og:title" content="<%= typeof title !== 'undefined' ? title : siteName %>">
+  <meta property="og:description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : settings.seo_default_description %>">
+  <meta property="og:type" content="<%= typeof ogType !== 'undefined' ? ogType : 'website' %>">
+  <% if (typeof canonical !== 'undefined' && canonical) { %><meta property="og:url" content="<%= canonical %>"><% } %>
+  <% if (typeof ogImage !== 'undefined' && ogImage) { %><meta property="og:image" content="<%= ogImage %>"><% } else { %><meta property="og:image" content="/og-default.png"><% } %>
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= typeof title !== 'undefined' ? title : siteName %>">
+  <meta name="twitter:description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : settings.seo_default_description %>">
+  <% if (typeof ogImage !== 'undefined' && ogImage) { %><meta name="twitter:image" content="<%= ogImage %>"><% } %>
+  <% if (typeof jsonLd !== 'undefined' && jsonLd && jsonLd.length) { %>
+  <% jsonLd.forEach(function(schema) { %><script type="application/ld+json"><%- JSON.stringify(schema) %></script>
+  <% }); } %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <% if (settings.search_console_code) { %><%- settings.search_console_code %><% } %>
+  <% if (settings.analytics_code) { %><%- settings.analytics_code %><% } %>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <%- include('partials/header') %>
+  <% if (flash) { %>
+  <div class="flash-wrap" role="alert">
+    <div class="flash flash-<%= flash.type %> container">
+      <span><%= flash.message %></span>
+      <button class="flash-close" aria-label="Dismiss">&times;</button>
+    </div>
+  </div>
+  <% } %>
+  <main id="main"><%- body %></main>
+  <%- include('partials/footer') %>
+  <%- include('partials/search-overlay') %>
+  <script src="/js/main.js" defer></script>
+</body>
+</html>

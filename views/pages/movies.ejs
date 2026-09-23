@@ -1,0 +1,66 @@
+<%- include('../partials/breadcrumbs') %>
+<div class="container page-head">
+  <h1>Movies</h1>
+  <p class="page-sub">Discover movies from official legal sources — filter by genre, year, language and rating.</p>
+</div>
+<div class="container listing-layout">
+  <aside class="filters" aria-label="Filters">
+    <form method="GET" action="/movies" class="filter-form">
+      <div class="filter-group">
+        <label for="f-genre">Genre</label>
+        <select name="genre" id="f-genre">
+          <option value="">All genres</option>
+          <% genres.forEach(function(g) { %><option value="<%= g.slug %>" <%= filters.genre === g.slug ? 'selected' : '' %>><%= g.name %></option><% }); %>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="f-year">Year</label>
+        <select name="year" id="f-year">
+          <option value="">All years</option>
+          <% years.forEach(function(y) { %><option value="<%= y %>" <%= String(filters.year) === String(y) ? 'selected' : '' %>><%= y %></option><% }); %>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="f-lang">Language</label>
+        <select name="language" id="f-lang">
+          <option value="">All languages</option>
+          <% languages.forEach(function(l) { %><option value="<%= l %>" <%= filters.language === l ? 'selected' : '' %>><%= l %></option><% }); %>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="f-rating">Min rating</label>
+        <select name="rating" id="f-rating">
+          <option value="">Any rating</option>
+          <% [9, 8, 7, 6, 5].forEach(function(r) { %><option value="<%= r %>" <%= String(filters.rating) === String(r) ? 'selected' : '' %>><%= r %>+ stars</option><% }); %>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="f-sort">Sort by</label>
+        <select name="sort" id="f-sort">
+          <option value="latest" <%= filters.sort === 'latest' ? 'selected' : '' %>>Latest</option>
+          <option value="popular" <%= filters.sort === 'popular' ? 'selected' : '' %>>Most popular</option>
+          <option value="rating" <%= filters.sort === 'rating' ? 'selected' : '' %>>Top rated</option>
+          <option value="az" <%= filters.sort === 'az' ? 'selected' : '' %>>A–Z</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Apply Filters</button>
+      <a href="/movies" class="btn btn-ghost btn-block">Clear</a>
+    </form>
+  </aside>
+  <div class="listing-main">
+    <p class="result-count"><%= pg.total %> movie<%= pg.total == 1 ? '' : 's' %> found</p>
+    <% if (items.length) { %>
+      <div class="grid grid-3">
+        <% items.forEach(function(m) { m.content_type = 'movie'; %><%- include('../partials/card', { item: m }) %><% }); %>
+      </div>
+      <%- include('../partials/pagination', { pg: pg, linkFor: function(p) { return queryString({ page: p }); } }) %>
+    <% } else { %>
+      <div class="empty-state">
+        <div class="empty-icon">🎬</div>
+        <h2>No movies found</h2>
+        <p>Try different filters or check back soon — new titles are added regularly.</p>
+        <a href="/movies" class="btn btn-secondary">Clear Filters</a>
+      </div>
+    <% } %>
+  </div>
+</div>

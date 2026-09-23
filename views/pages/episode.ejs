@@ -1,0 +1,37 @@
+<%- include('../partials/breadcrumbs') %>
+<div class="container episode-layout">
+  <div class="episode-main">
+    <% if (ep.thumbnail_image) { %>
+    <div class="episode-thumb-large"><img src="<%= ep.thumbnail_image %>" alt="<%= ep.title %>" fetchpriority="high"></div>
+    <% } %>
+    <p class="episode-kicker"><a href="/series/<%= show.slug %>"><%= show.title %></a> &middot; <a href="/series/<%= show.slug %>/season-<%= season.season_number %>"><%= season.title || ('Season ' + season.season_number) %></a> &middot; Episode <%= ep.episode_number %></p>
+    <h1><%= ep.title %></h1>
+    <div class="detail-meta">
+      <% if (ep.air_date) { %><span>Aired <%= ep.air_date %></span><% } %>
+      <% if (ep.runtime) { %><span><%= H.formatRuntime(ep.runtime) %></span><% } %>
+      <span><%= H.formatCount(ep.view_count) %> views</span>
+    </div>
+    <% if (ep.description) { %><div class="rich-text"><%- ep.description %></div><% } %>
+    <div class="detail-actions">
+      <% if (ep.official_watch_url) { %>
+        <a href="<%= ep.official_watch_url %>" target="_blank" rel="noopener" class="btn btn-primary btn-lg">▶ Watch on <%= ep.official_source_name || 'Official Source' %></a>
+      <% } else { %>
+        <p class="muted">Official watch link coming soon.</p>
+      <% } %>
+    </div>
+    <p class="source-note">🔒 100% legal — streams from the official source<% if (ep.official_source_name) { %>: <strong><%= ep.official_source_name %></strong><% } %>.</p>
+    <%- include('../partials/share', { shareUrl: canonical, shareTitle: `${show.title} — ${ep.title}` }) %>
+    <nav class="ep-nav">
+      <% if (prev) { %><a class="ep-nav-btn" href="/series/<%= show.slug %>/season-<%= season.season_number %>/episode-<%= prev.episode_number %>">← E<%= prev.episode_number %>: <%= prev.title %></a><% } else { %><span></span><% } %>
+      <% if (nextEp) { %><a class="ep-nav-btn next" href="/series/<%= show.slug %>/season-<%= season.season_number %>/episode-<%= nextEp.episode_number %>">E<%= nextEp.episode_number %>: <%= nextEp.title %> →</a><% } %>
+    </nav>
+  </div>
+  <aside class="episode-side">
+    <h2>More from <%= season.title || ('Season ' + season.season_number) %></h2>
+    <a class="btn btn-secondary btn-sm" href="/series/<%= show.slug %>/season-<%= season.season_number %>">All Episodes</a>
+    <a class="side-show" href="/series/<%= show.slug %>">
+      <% if (show.poster_image) { %><img src="<%= show.poster_image %>" alt="<%= show.title %>" loading="lazy"><% } %>
+      <div><strong><%= show.title %></strong><span>View series →</span></div>
+    </a>
+  </aside>
+</div>

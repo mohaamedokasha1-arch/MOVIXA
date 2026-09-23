@@ -1,0 +1,42 @@
+<header class="site-header" id="siteHeader">
+  <div class="container header-inner">
+    <a class="logo" href="/" aria-label="<%= siteName %> home">
+      <% if (settings.logo) { %>
+        <img src="<%= settings.logo %>" alt="<%= siteName %>" height="36">
+      <% } else { %>
+        <svg class="logo-mark" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><rect x="1" y="4" width="30" height="24" rx="5" fill="#e50914"/><path d="M13 11.5v9l7.5-4.5z" fill="#fff"/></svg>
+        <span class="logo-text"><%= siteName %></span>
+      <% } %>
+    </a>
+    <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+      <a href="/" class="<%= currentPath === '/' ? 'active' : '' %>">Home</a>
+      <a href="/movies" class="<%= currentPath.startsWith('/movies') || currentPath.startsWith('/movie/') ? 'active' : '' %>">Movies</a>
+      <a href="/series" class="<%= currentPath.startsWith('/series') ? 'active' : '' %>">Series</a>
+      <div class="nav-dropdown">
+        <button class="nav-drop-btn <%= currentPath.startsWith('/genre/') ? 'active' : '' %>" aria-haspopup="true" aria-expanded="false">Genres
+          <svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        </button>
+        <div class="nav-drop-menu" role="menu">
+          <% genres.forEach(function(g) { %><a href="/genre/<%= g.slug %>" role="menuitem"><%= g.name %></a><% }); %>
+        </div>
+      </div>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" id="searchOpen" aria-label="Search">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      </button>
+      <button class="hamburger" id="menuToggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+    <a href="/">Home</a>
+    <a href="/movies">Movies</a>
+    <a href="/series">Series</a>
+    <div class="mobile-genres-label">Genres</div>
+    <div class="mobile-genres">
+      <% genres.forEach(function(g) { %><a href="/genre/<%= g.slug %>"><%= g.name %></a><% }); %>
+    </div>
+  </nav>
+</header>

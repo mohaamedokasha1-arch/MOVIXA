@@ -1,0 +1,23 @@
+<div class="page-actions">
+  <h1 class="admin-h1">Users (<%= items.length %>)</h1>
+  <a href="/admin/users/new" class="btn btn-primary">+ Add User</a>
+</div>
+<div class="table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Created</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% items.forEach(function(u) { %>
+      <tr>
+        <td><strong><%= u.username %></strong><% if (currentUser && u.id === currentUser.id) { %> <span class="pill">you</span><% } %></td>
+        <td><%= u.email %></td>
+        <td><span class="pill"><%= u.role %></span></td>
+        <td><small><%= H.timeAgo(u.created_at) %></small></td>
+        <td class="actions">
+          <a href="/admin/users/edit/<%= u.id %>" class="btn btn-secondary btn-xs">Edit</a>
+          <% if (!currentUser || u.id !== currentUser.id) { %><button type="button" class="btn btn-danger btn-xs" data-delete="/admin/users/delete/<%= u.id %>">Delete</button><% } %>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>

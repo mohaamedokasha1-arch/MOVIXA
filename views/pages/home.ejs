@@ -1,0 +1,118 @@
+<section class="hero" aria-label="Featured content">
+  <% if (hero.length) { %>
+  <div class="hero-slider" id="heroSlider">
+    <% hero.forEach(function(item, i) { 
+      const isMovie = item.content_type === 'movie';
+      const href = isMovie ? '/movie/' + item.slug : '/series/' + item.slug;
+      const year = isMovie ? item.release_year : item.first_air_year;
+    %>
+    <div class="hero-slide <%= i === 0 ? 'active' : '' %>" data-index="<%= i %>">
+      <div class="hero-bg">
+        <% if (item.backdrop_image) { %>
+          <img src="<%= item.backdrop_image %>" alt="" <%= i === 0 ? 'fetchpriority="high"' : 'loading="lazy"' %>>
+        <% } %>
+        <div class="hero-gradient"></div>
+      </div>
+      <div class="container hero-content">
+        <div class="hero-badges">
+          <span class="badge badge-featured">Featured</span>
+          <span class="badge badge-type"><%= isMovie ? 'Movie' : 'Series' %></span>
+        </div>
+        <h1 class="hero-title"><%= item.title %></h1>
+        <div class="hero-meta">
+          <% if (year) { %><span><%= year %></span><% } %>
+          <% if (isMovie && item.runtime) { %><span><%= H.formatRuntime(item.runtime) %></span><% } %>
+          <% if (!isMovie && item.status) { %><span class="status-<%= item.status %>"><%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %></span><% } %>
+          <% if (item.rating > 0) { %><span class="meta-rating">★ <%= Number(item.rating).toFixed(1) %>/10</span><% } %>
+        </div>
+        <p class="hero-desc"><%= H.excerpt(item.description || item.short_description, 200) %></p>
+        <div class="hero-actions">
+          <a href="<%= href %>" class="btn btn-primary btn-lg">▶ Watch Now</a>
+          <a href="<%= href %>#details" class="btn btn-secondary btn-lg">More Info</a>
+        </div>
+      </div>
+    </div>
+    <% }); %>
+    <% if (hero.length > 1) { %>
+    <div class="hero-dots" role="tablist">
+      <% hero.forEach(function(_, i) { %><button class="hero-dot <%= i === 0 ? 'active' : '' %>" data-go="<%= i %>" aria-label="Slide <%= i + 1 %>"></button><% }); %>
+    </div>
+    <button class="hero-arrow hero-prev" aria-label="Previous">‹</button>
+    <button class="hero-arrow hero-next" aria-label="Next">›</button>
+    <% } %>
+  </div>
+  <% } else { %>
+  <div class="hero-empty container">
+    <h1>Coming Soon!</h1>
+    <p>We're adding great legal content. Check back shortly.</p>
+  </div>
+  <% } %>
+</section>
+
+<% if (trending.length) { %>
+<section class="section container">
+  <div class="section-head">
+    <h2>Trending Now</h2>
+    <div class="carousel-nav">
+      <button class="carousel-btn" data-target="trendingRow" data-dir="-1" aria-label="Scroll left">‹</button>
+      <button class="carousel-btn" data-target="trendingRow" data-dir="1" aria-label="Scroll right">›</button>
+    </div>
+  </div>
+  <div class="carousel" id="trendingRow">
+    <% trending.forEach(function(item) { %><%- include('../partials/card', { item: item, showType: true }) %><% }); %>
+  </div>
+</section>
+<% } %>
+
+<% if (latestMovies.length) { %>
+<section class="section container">
+  <div class="section-head">
+    <h2>Latest Movies</h2>
+    <a class="see-all" href="/movies?sort=latest">See all →</a>
+  </div>
+  <div class="grid grid-4">
+    <% latestMovies.forEach(function(item) { %><%- include('../partials/card', { item: item }) %><% }); %>
+  </div>
+</section>
+<% } else { %>
+<section class="section container"><div class="empty-state"><h2>Latest Movies</h2><p>No movies found. Check back soon!</p></div></section>
+<% } %>
+
+<% if (popularSeries.length) { %>
+<section class="section container">
+  <div class="section-head">
+    <h2>Popular Series</h2>
+    <a class="see-all" href="/series?sort=popular">See all →</a>
+  </div>
+  <div class="grid grid-4">
+    <% popularSeries.forEach(function(item) { %><%- include('../partials/card', { item: item }) %><% }); %>
+  </div>
+</section>
+<% } %>
+
+<% if (genreCards.length) { %>
+<section class="section container">
+  <div class="section-head"><h2>Browse by Genre</h2></div>
+  <div class="grid grid-genres">
+    <% genreCards.forEach(function(g) { %>
+    <a class="genre-card" href="/genre/<%= g.slug %>">
+      <% if (g.image) { %><img src="<%= g.image %>" alt="<%= g.name %>" loading="lazy"><div class="genre-card-overlay"></div><% } %>
+      <div class="genre-card-body">
+        <h3><%= g.name %></h3>
+        <span><%= g.total %> title<%= g.total == 1 ? '' : 's' %></span>
+      </div>
+    </a>
+    <% }); %>
+  </div>
+</section>
+<% } %>
+
+<section class="section container">
+  <div class="legal-banner">
+    <div>
+      <h2>100% Legal Streaming</h2>
+      <p>Every title on <%= siteName %> is owned by us, licensed for distribution, or linked to its official legal source. Creators get credit — you get peace of mind.</p>
+    </div>
+    <a href="/copyright" class="btn btn-secondary">Our Copyright Policy</a>
+  </div>
+</section>

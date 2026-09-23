@@ -1,0 +1,100 @@
+<div class="detail-hero">
+  <% if (show.backdrop_image) { %>
+  <div class="detail-backdrop">
+    <img src="<%= show.backdrop_image %>" alt="" fetchpriority="high">
+    <div class="detail-gradient"></div>
+  </div>
+  <% } %>
+  <div class="container detail-hero-inner">
+    <%- include('../partials/breadcrumbs') %>
+    <div class="detail-layout" id="details">
+      <div class="detail-poster">
+        <% if (show.poster_image) { %><img src="<%= show.poster_image %>" alt="<%= show.title %> poster" fetchpriority="high"><% } else { %><div class="card-noimg big"><span><%= siteName %></span></div><% } %>
+      </div>
+      <div class="detail-info">
+        <h1><%= show.title %></h1>
+        <% if (show.original_title && show.original_title !== show.title) { %><p class="original-title"><%= show.original_title %></p><% } %>
+        <div class="detail-meta">
+          <% if (show.first_air_year) { %><span><%= show.first_air_year %><% if (show.last_air_year && show.last_air_year !== show.first_air_year) { %>–<%= show.last_air_year %><% } %></span><% } %>
+          <span class="status-<%= show.status %>"><%= show.status.charAt(0).toUpperCase() + show.status.slice(1) %></span>
+          <span><%= show.seasons.length %> Season<%= show.seasons.length == 1 ? '' : 's' %></span>
+          <span><%= show.total_episodes %> Episode<%= show.total_episodes == 1 ? '' : 's' %></span>
+          <% if (show.language) { %><span><%= show.language %></span><% } %>
+          <% if (show.rating > 0) { %><span class="meta-rating">★ <%= Number(show.rating).toFixed(1) %>/10</span><% } %>
+          <span class="views"><%= H.formatCount(show.view_count) %> views</span>
+        </div>
+        <% if (show.genres.length) { %>
+        <div class="genre-tags">
+          <% show.genres.forEach(function(g) { %><a class="tag tag-link" href="/genre/<%= g.slug %>"><%= g.name %></a><% }); %>
+        </div>
+        <% } %>
+        <% if (show.short_description) { %><p class="detail-tagline"><%= show.short_description %></p><% } %>
+        <div class="detail-actions">
+          <% if (show.seasons.length && show.seasons[0].published_episodes > 0) { %>
+            <a href="/series/<%= show.slug %>/season-<%= show.seasons[0].season_number %>" class="btn btn-primary btn-lg">▶ Start Watching</a>
+          <% } %>
+          <% if (trailerEmbed) { %><button class="btn btn-secondary btn-lg" id="trailerBtn" type="button">Watch Trailer</button><% } %>
+        </div>
+        <p class="source-note">🔒 100% legal — episodes stream from official sources.</p>
+        <%- include('../partials/share', { shareUrl: canonical, shareTitle: show.title }) %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if (trailerEmbed) { %>
+<div class="trailer-modal" id="trailerModal" aria-hidden="true" role="dialog" aria-label="Trailer">
+  <div class="trailer-box">
+    <button class="trailer-close" id="trailerClose" aria-label="Close trailer">&times;</button>
+    <div class="video-embed"><iframe data-src="<%= trailerEmbed %>" title="<%= show.title %> trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+  </div>
+</div>
+<% } %>
+
+<div class="container detail-sections">
+  <% if (show.description) { %>
+  <section class="detail-block">
+    <h2>About This Series</h2>
+    <div class="rich-text"><%- show.description %></div>
+  </section>
+  <% } %>
+
+  <section class="detail-block">
+    <h2>Seasons</h2>
+    <% if (show.seasons.length) { %>
+    <div class="grid grid-seasons">
+      <% show.seasons.forEach(function(se) { %>
+      <a class="season-card" href="/series/<%= show.slug %>/season-<%= se.season_number %>">
+        <div class="season-poster">
+          <% if (se.poster_image) { %><img src="<%= se.poster_image %>" alt="<%= se.title || 'Season ' + se.season_number %>" loading="lazy"><% } else if (show.poster_image) { %><img src="<%= show.poster_image %>" alt="" loading="lazy"><% } else { %><div class="card-noimg"><span>S<%= se.season_number %></span></div><% } %>
+        </div>
+        <div class="season-body">
+          <h3><%= se.title || ('Season ' + se.season_number) %></h3>
+          <span><%= se.published_episodes %> episode<%= se.published_episodes == 1 ? '' : 's' %><% if (se.air_year) { %> &middot; <%= se.air_year %><% } %></span>
+        </div>
+      </a>
+      <% }); %>
+    </div>
+    <% } else { %><p class="muted">Seasons are being added. Check back soon!</p><% } %>
+  </section>
+
+  <% if (show.actors.length) { %>
+  <section class="detail-block">
+    <h2>Cast</h2>
+    <div class="cast-grid">
+      <% show.actors.forEach(function(p) { %>
+        <div class="cast-card"><% if (p.image) { %><img src="<%= p.image %>" alt="<%= p.name %>" loading="lazy"><% } else { %><div class="cast-noimg"><%= p.name.charAt(0) %></div><% } %><strong><%= p.name %></strong><span><%= p.character_name || 'Actor' %></span></div>
+      <% }); %>
+    </div>
+  </section>
+  <% } %>
+
+  <% if (related.length) { %>
+  <section class="detail-block">
+    <h2>You May Also Like</h2>
+    <div class="grid grid-4">
+      <% related.forEach(function(item) { %><%- include('../partials/card', { item: item }) %><% }); %>
+    </div>
+  </section>
+  <% } %>
+</div>

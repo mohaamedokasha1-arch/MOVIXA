@@ -1,0 +1,50 @@
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-col footer-about">
+      <a class="logo" href="/">
+        <svg class="logo-mark" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><rect x="1" y="4" width="30" height="24" rx="5" fill="#e50914"/><path d="M13 11.5v9l7.5-4.5z" fill="#fff"/></svg>
+        <span class="logo-text"><%= siteName %></span>
+      </a>
+      <p><%= settings.site_description %></p>
+      <div class="social-links">
+        <% if (settings.social_facebook) { %><a href="<%= settings.social_facebook %>" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M13.5 21v-7h2.4l.4-3h-2.8V9.1c0-.9.3-1.5 1.6-1.5h1.3V4.9c-.6-.1-1.4-.2-2.2-.2-2.2 0-3.7 1.3-3.7 3.8V11H8v3h2.5v7z"/></svg></a><% } %>
+        <% if (settings.social_twitter) { %><a href="<%= settings.social_twitter %>" target="_blank" rel="noopener" aria-label="Twitter"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M18.9 5H21l-4.6 5.3L21.8 19h-4.2l-3.3-4.3L10.5 19H8.4l4.9-5.7L4.2 5h4.3l3 3.9zm-1.5 12.5h1.2L8.6 6.4H7.3z"/></svg></a><% } %>
+        <% if (settings.social_instagram) { %><a href="<%= settings.social_instagram %>" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/><circle cx="17" cy="7" r="1.2" fill="currentColor" stroke="none"/></svg></a><% } %>
+        <% if (settings.social_youtube) { %><a href="<%= settings.social_youtube %>" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M22 8.2s-.2-1.4-.8-2c-.8-.8-1.6-.8-2-.9C16.4 5 12 5 12 5s-4.4 0-7.2.3c-.4.1-1.2.1-2 .9-.6.6-.8 2-.8 2S2 9.9 2 11.6v1.5c0 1.7.2 3.4.2 3.4s.2 1.4.8 2c.8.8 1.8.8 2.2.9 1.6.2 7.6.3 7.6.3s4.4 0 7.2-.4c.4-.1 1.2-.1 2-.9.6-.6.8-2 .8-2s.2-1.6.2-3.3v-1.5c0-1.7-.2-3.4-.2-3.4zM10 14.7V9.9l5.2 2.4z"/></svg></a><% } %>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="/movies">Movies</a></li>
+        <li><a href="/series">Series</a></li>
+        <li><a href="/search">Search</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h3>Legal</h3>
+      <ul>
+        <li><a href="/privacy">Privacy Policy</a></li>
+        <li><a href="/terms">Terms of Service</a></li>
+        <li><a href="/copyright">Copyright &amp; DMCA</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h3>Stay Updated</h3>
+      <p class="newsletter-text">New legal releases, weekly. No spam.</p>
+      <form class="newsletter-form" action="/newsletter" method="POST">
+        <input type="email" name="email" placeholder="Your email" required aria-label="Email address">
+        <button type="submit" class="btn btn-primary btn-sm">Subscribe</button>
+      </form>
+      <p class="legal-note"><%= settings.copyright_notice %></p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container footer-bottom-inner">
+      <span>&copy; <%= new Date().getFullYear() %> <%= siteName %>. All rights reserved.</span>
+      <span class="footer-legal-links"><a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/copyright">DMCA</a></span>
+    </div>
+  </div>
+</footer>

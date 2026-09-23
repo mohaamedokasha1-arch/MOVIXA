@@ -1,0 +1,68 @@
+<%- include('../partials/breadcrumbs') %>
+<div class="container page-head">
+  <h1>Series</h1>
+  <p class="page-sub">Binge-worthy series from official legal sources — filter by genre, year, language and status.</p>
+</div>
+<div class="container listing-layout">
+  <aside class="filters" aria-label="Filters">
+    <form method="GET" action="/series" class="filter-form">
+      <div class="filter-group">
+        <label for="f-genre">Genre</label>
+        <select name="genre" id="f-genre">
+          <option value="">All genres</option>
+          <% genres.forEach(function(g) { %><option value="<%= g.slug %>" <%= filters.genre === g.slug ? 'selected' : '' %>><%= g.name %></option><% }); %>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="f-year">First aired</label>
+        <select name="year" id="f-year">
+          <option value="">All years</option>
+          <% years.forEach(function(y) { %><option value="<%= y %>" <%= String(filters.year) === String(y) ? 'selected' : '' %>><%= y %></option><% }); %>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="f-lang">Language</label>
+        <select name="language" id="f-lang">
+          <option value="">All languages</option>
+          <% languages.forEach(function(l) { %><option value="<%= l %>" <%= filters.language === l ? 'selected' : '' %>><%= l %></option><% }); %>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="f-status">Status</label>
+        <select name="status" id="f-status">
+          <option value="">Any status</option>
+          <option value="ongoing" <%= filters.status === 'ongoing' ? 'selected' : '' %>>Ongoing</option>
+          <option value="completed" <%= filters.status === 'completed' ? 'selected' : '' %>>Completed</option>
+          <option value="cancelled" <%= filters.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="f-sort">Sort by</label>
+        <select name="sort" id="f-sort">
+          <option value="latest" <%= filters.sort === 'latest' ? 'selected' : '' %>>Latest</option>
+          <option value="popular" <%= filters.sort === 'popular' ? 'selected' : '' %>>Most popular</option>
+          <option value="rating" <%= filters.sort === 'rating' ? 'selected' : '' %>>Top rated</option>
+          <option value="az" <%= filters.sort === 'az' ? 'selected' : '' %>>A–Z</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Apply Filters</button>
+      <a href="/series" class="btn btn-ghost btn-block">Clear</a>
+    </form>
+  </aside>
+  <div class="listing-main">
+    <p class="result-count"><%= pg.total %> series found</p>
+    <% if (items.length) { %>
+      <div class="grid grid-3">
+        <% items.forEach(function(s) { s.content_type = 'series'; %><%- include('../partials/card', { item: s }) %><% }); %>
+      </div>
+      <%- include('../partials/pagination', { pg: pg, linkFor: function(p) { return queryString({ page: p }); } }) %>
+    <% } else { %>
+      <div class="empty-state">
+        <div class="empty-icon">📺</div>
+        <h2>No series found</h2>
+        <p>Try different filters or check back soon — new titles are added regularly.</p>
+        <a href="/series" class="btn btn-secondary">Clear Filters</a>
+      </div>
+    <% } %>
+  </div>
+</div>

@@ -1,0 +1,53 @@
+<%- include('../partials/breadcrumbs') %>
+<div class="container season-head">
+  <div class="season-head-poster">
+    <% if (season.poster_image) { %><img src="<%= season.poster_image %>" alt="<%= season.title || 'Season ' + season.season_number %>"><% } else if (show.poster_image) { %><img src="<%= show.poster_image %>" alt=""><% } %>
+  </div>
+  <div>
+    <p class="season-kicker"><a href="/series/<%= show.slug %>"><%= show.title %></a></p>
+    <h1><%= season.title || ('Season ' + season.season_number) %></h1>
+    <% if (season.air_year) { %><p class="muted">Aired <%= season.air_year %> &middot; <%= season.episodes.length %> episode<%= season.episodes.length == 1 ? '' : 's' %></p><% } %>
+    <% if (season.description) { %><div class="rich-text"><%- season.description %></div><% } %>
+    <% if (allSeasons.length > 1) { %>
+    <div class="season-switcher">
+      <label for="seasonSelect">Season:</label>
+      <select id="seasonSelect" onchange="if(this.value) location.href=this.value">
+        <% allSeasons.forEach(function(s) { %>
+          <option value="/series/<%= show.slug %>/season-<%= s.season_number %>" <%= s.season_number === season.season_number ? 'selected' : '' %>><%= s.title || ('Season ' + s.season_number) %></option>
+        <% }); %>
+      </select>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<div class="container detail-sections">
+  <section class="detail-block">
+    <h2>Episodes</h2>
+    <% if (season.episodes.length) { %>
+    <div class="episode-list">
+      <% season.episodes.forEach(function(ep) { %>
+      <a class="episode-row" href="/series/<%= show.slug %>/season-<%= season.season_number %>/episode-<%= ep.episode_number %>">
+        <span class="ep-num"><%= ep.episode_number %></span>
+        <div class="ep-thumb">
+          <% if (ep.thumbnail_image) { %><img src="<%= ep.thumbnail_image %>" alt="<%= ep.title %>" loading="lazy"><% } else { %><div class="card-noimg"><span>E<%= ep.episode_number %></span></div><% } %>
+          <span class="ep-play" aria-hidden="true">▶</span>
+        </div>
+        <div class="ep-body">
+          <h3><%= ep.title %></h3>
+          <div class="ep-meta">
+            <% if (ep.air_date) { %><span><%= ep.air_date %></span><% } %>
+            <% if (ep.runtime) { %><span><%= H.formatRuntime(ep.runtime) %></span><% } %>
+            <span><%= H.formatCount(ep.view_count) %> views</span>
+          </div>
+          <% if (ep.description) { %><p class="ep-desc"><%= H.excerpt(ep.description, 160) %></p><% } %>
+        </div>
+        <span class="ep-cta">Watch →</span>
+      </a>
+      <% }); %>
+    </div>
+    <% } else { %>
+    <div class="empty-state"><p>Episodes are being added. Check back soon!</p></div>
+    <% } %>
+  </section>
+</div>

@@ -1,0 +1,32 @@
+<div class="page-actions">
+  <h1 class="admin-h1">Media Library (<%= pg.total %>)</h1>
+</div>
+<form method="POST" action="/admin/media/upload" enctype="multipart/form-data" class="media-upload">
+  <input type="file" name="files" accept="image/*" multiple required>
+  <button type="submit" class="btn btn-primary btn-sm">Upload Images</button>
+  <small class="muted">JPG, PNG, WebP, GIF, SVG, AVIF — max 5MB each</small>
+</form>
+<form class="admin-filters" method="GET" action="/admin/media">
+  <input type="search" name="q" value="<%= q %>" placeholder="Search by filename...">
+  <button type="submit" class="btn btn-secondary btn-sm">Search</button>
+</form>
+<% if (items.length) { %>
+<div class="media-grid">
+  <% items.forEach(function(m) { %>
+  <div class="media-item">
+    <div class="media-thumb"><img src="<%= m.filepath %>" alt="<%= m.filename %>" loading="lazy"></div>
+    <div class="media-meta">
+      <strong title="<%= m.filename %>"><%= m.filename.length > 24 ? m.filename.slice(0, 22) + '…' : m.filename %></strong>
+      <small class="muted"><%= (m.size / 1024).toFixed(1) %> KB &middot; <%= H.timeAgo(m.created_at) %></small>
+      <div class="media-actions">
+        <button type="button" class="btn btn-secondary btn-xs" data-copy="<%= m.filepath %>">Copy URL</button>
+        <button type="button" class="btn btn-danger btn-xs" data-delete="/admin/media/delete/<%= m.id %>">Delete</button>
+      </div>
+    </div>
+  </div>
+  <% }); %>
+</div>
+<%- include('../partials/pagination', { pg: pg, linkFor: function(p) { return `?q=${encodeURIComponent(q)}&page=${p}`; } }) %>
+<% } else { %>
+<div class="empty-state"><h2>No media yet</h2><p>Upload images above to build your library.</p></div>
+<% } %>

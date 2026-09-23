@@ -1,0 +1,32 @@
+<div class="page-actions">
+  <h1 class="admin-h1">Cast &amp; Crew (<%= pg.total %>)</h1>
+  <a href="/admin/cast/new" class="btn btn-primary">+ Add Person</a>
+</div>
+<form class="admin-filters" method="GET" action="/admin/cast">
+  <input type="search" name="q" value="<%= q %>" placeholder="Search by name...">
+  <button type="submit" class="btn btn-secondary btn-sm">Search</button>
+</form>
+<% if (items.length) { %>
+<div class="table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>Photo</th><th>Name</th><th>Role</th><th>Credits</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% items.forEach(function(p) { %>
+      <tr>
+        <td><% if (p.image) { %><img class="thumb round" src="<%= p.image %>" alt="" loading="lazy"><% } else { %><span class="avatar-fallback"><%= p.name.charAt(0) %></span><% } %></td>
+        <td><strong><%= p.name %></strong></td>
+        <td><span class="pill"><%= p.role %></span></td>
+        <td><%= p.credits %></td>
+        <td class="actions">
+          <a href="/admin/cast/edit/<%= p.id %>" class="btn btn-secondary btn-xs">Edit</a>
+          <button type="button" class="btn btn-danger btn-xs" data-delete="/admin/cast/delete/<%= p.id %>">Delete</button>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/pagination', { pg: pg, linkFor: function(p) { return `?q=${encodeURIComponent(q)}&page=${p}`; } }) %>
+<% } else { %>
+<div class="empty-state"><h2>No people found</h2><a href="/admin/cast/new" class="btn btn-primary">+ Add Person</a></div>
+<% } %>

@@ -1,0 +1,25 @@
+<div class="page-actions">
+  <h1 class="admin-h1">Pages (<%= items.length %>)</h1>
+  <a href="/admin/pages/new" class="btn btn-primary">+ Add Custom Page</a>
+</div>
+<div class="table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>Title</th><th>Slug</th><th>Type</th><th>Status</th><th>Updated</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% items.forEach(function(p) { %>
+      <tr>
+        <td><strong><%= p.title %></strong><% if (p.is_core) { %> <span class="pill">core</span><% } %></td>
+        <td><small class="muted">/<%= p.slug %></small></td>
+        <td><%= p.type %></td>
+        <td><span class="pill pill-<%= p.status %>"><%= p.status %></span></td>
+        <td><small><%= H.timeAgo(p.updated_at) %></small></td>
+        <td class="actions">
+          <a href="/admin/pages/edit/<%= p.id %>" class="btn btn-secondary btn-xs">Edit</a>
+          <a href="/<%= p.slug %>" target="_blank" rel="noopener" class="btn btn-ghost btn-xs">View</a>
+          <% if (!p.is_core) { %><button type="button" class="btn btn-danger btn-xs" data-delete="/admin/pages/delete/<%= p.id %>">Delete</button><% } %>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>

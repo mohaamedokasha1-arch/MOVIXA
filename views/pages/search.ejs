@@ -1,0 +1,67 @@
+<%- include('../partials/breadcrumbs') %>
+<div class="container page-head">
+  <h1><%= q ? 'Results for "' + q + '"' : 'Search' %></h1>
+  <form class="search-page-form" action="/search" method="GET">
+    <input type="search" name="q" value="<%= q %>" placeholder="Search movies, series, episodes..." aria-label="Search">
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+  <div class="type-tabs" role="tablist">
+    <a href="/search?q=<%= encodeURIComponent(q) %>" class="<%= activeType === 'all' ? 'active' : '' %>">All</a>
+    <a href="/search?q=<%= encodeURIComponent(q) %>&type=movies" class="<%= activeType === 'movies' ? 'active' : '' %>">Movies</a>
+    <a href="/search?q=<%= encodeURIComponent(q) %>&type=series" class="<%= activeType === 'series' ? 'active' : '' %>">Series</a>
+    <a href="/search?q=<%= encodeURIComponent(q) %>&type=episodes" class="<%= activeType === 'episodes' ? 'active' : '' %>">Episodes</a>
+  </div>
+  <form class="search-filters" action="/search" method="GET">
+    <input type="hidden" name="q" value="<%= q %>">
+    <input type="hidden" name="type" value="<%= activeType %>">
+    <select name="genre" aria-label="Filter by genre">
+      <option value="">All genres</option>
+      <% genres.forEach(function(g) { %><option value="<%= g.slug %>" <%= activeGenre === g.slug ? 'selected' : '' %>><%= g.name %></option><% }); %>
+    </select>
+    <select name="sort" aria-label="Sort results">
+      <option value="relevance" <%= activeSort === 'relevance' ? 'selected' : '' %>>Relevance</option>
+      <option value="latest" <%= activeSort === 'latest' ? 'selected' : '' %>>Latest</option>
+      <option value="rating" <%= activeSort === 'rating' ? 'selected' : '' %>>Top rated</option>
+      <option value="az" <%= activeSort === 'az' ? 'selected' : '' %>>A–Z</option>
+    </select>
+    <button type="submit" class="btn btn-secondary btn-sm">Apply</button>
+  </form>
+</div>
+<div class="container">
+  <% if (!q) { %>
+    <div class="empty-state"><p>Type a title above to search across movies, series and episodes.</p></div>
+  <% } else if (results.length) { %>
+    <p class="result-count"><%= pg.total %> result<%= pg.total == 1 ? '' : 's' %></p>
+    <div class="search-results">
+      <% results.forEach(function(r) {
+        const href = r.content_type === 'movie' ? '/movie/' + r.slug : r.content_type === 'series' ? '/series/' + r.slug : `/series/${r.series_slug}/season-${r.season_number}/episode-${r.episode_number}`;
+        const img = r.content_type === 'episode' ? r.thumbnail_image : r.poster_image;
+        const year = r.content_type === 'movie' ? r.release_year : r.first_air_year;
+      %>
+      <a class="search-row" href="<%= href %>">
+        <div class="search-thumb"><% if (img) { %><img src="<%= img %>" alt="" loading="lazy"><% } else { %><div class="card-noimg"><span><%= siteName %></span></div><% } %></div>
+        <div class="search-body">
+          <h3><%- H.highlight(r.title, q) %></h3>
+          <div class="search-meta">
+            <span class="badge badge-type"><%= r.content_type %></span>
+            <% if (year) { %><span><%= year %></span><% } %>
+            <% if (r.content_type === 'episode') { %><span><%= r.series_title %> S<%= r.season_number %>E<%= r.episode_number %></span><% } %>
+            <% if (r.rating > 0) { %><span class="meta-rating">★ <%= Number(r.rating).toFixed(1) %></span><% } %>
+          </div>
+          <p><%- H.highlight(H.excerpt(r.description || r.short_description, 180), q) %></p>
+        </div>
+      </a>
+      <% }); %>
+    </div>
+    <%- include('../partials/pagination', { pg: pg, linkFor: function(p) { return '/search?q=' + encodeURIComponent(q) + '&type=' + activeType + '&genre=' + encodeURIComponent(activeGenre) + '&sort=' + activeSort + '&page=' + p; } }) %>
+  <% } else { %>
+    <div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <h2>No results found for "<%= q %>"</h2>
+      <p>Try different keywords, check your spelling, or browse by genre.</p>
+      <div class="empty-genres">
+        <% genres.slice(0, 6).forEach(function(g) { %><a class="tag tag-link" href="/genre/<%= g.slug %>"><%= g.name %></a><% }); %>
+      </div>
+    </div>
+  <% } %>
+</div>

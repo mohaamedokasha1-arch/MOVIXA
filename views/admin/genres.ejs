@@ -1,0 +1,25 @@
+<div class="page-actions">
+  <h1 class="admin-h1">Genres (<%= items.length %>)</h1>
+  <a href="/admin/genres/new" class="btn btn-primary">+ Add Genre</a>
+</div>
+<p class="muted">Drag rows to reorder genres (order is used in navigation and homepage).</p>
+<div class="table-wrap">
+  <table class="admin-table" id="genreTable">
+    <thead><tr><th></th><th>Name</th><th>Slug</th><th>Titles</th><th>Actions</th></tr></thead>
+    <tbody id="genreRows">
+      <% items.forEach(function(g) { %>
+      <tr data-id="<%= g.id %>" draggable="true">
+        <td class="drag-handle" title="Drag to reorder">⠿</td>
+        <td><strong><%= g.name %></strong></td>
+        <td><small class="muted">/genre/<%= g.slug %></small></td>
+        <td><%= g.usage_count %></td>
+        <td class="actions">
+          <a href="/admin/genres/edit/<%= g.id %>" class="btn btn-secondary btn-xs">Edit</a>
+          <a href="/genre/<%= g.slug %>" target="_blank" rel="noopener" class="btn btn-ghost btn-xs">View</a>
+          <button type="button" class="btn btn-danger btn-xs" data-delete="/admin/genres/delete/<%= g.id %>">Delete</button>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>

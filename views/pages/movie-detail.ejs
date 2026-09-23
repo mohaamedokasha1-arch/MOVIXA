@@ -1,0 +1,113 @@
+<div class="detail-hero">
+  <% if (movie.backdrop_image) { %>
+  <div class="detail-backdrop">
+    <img src="<%= movie.backdrop_image %>" alt="" fetchpriority="high">
+    <div class="detail-gradient"></div>
+  </div>
+  <% } %>
+  <div class="container detail-hero-inner">
+    <%- include('../partials/breadcrumbs') %>
+    <div class="detail-layout" id="details">
+      <div class="detail-poster">
+        <% if (movie.poster_image) { %><img src="<%= movie.poster_image %>" alt="<%= movie.title %> poster" fetchpriority="high"><% } else { %><div class="card-noimg big"><span><%= siteName %></span></div><% } %>
+      </div>
+      <div class="detail-info">
+        <h1><%= movie.title %></h1>
+        <% if (movie.original_title && movie.original_title !== movie.title) { %><p class="original-title"><%= movie.original_title %></p><% } %>
+        <div class="detail-meta">
+          <% if (movie.release_year) { %><span><%= movie.release_year %></span><% } %>
+          <% if (movie.runtime) { %><span><%= H.formatRuntime(movie.runtime) %></span><% } %>
+          <% if (movie.language) { %><span><%= movie.language %></span><% } %>
+          <% if (movie.country) { %><span><%= movie.country %></span><% } %>
+          <% if (movie.rating > 0) { %><span class="meta-rating">★ <%= Number(movie.rating).toFixed(1) %>/10</span><% } %>
+          <span class="views"><%= H.formatCount(movie.view_count) %> views</span>
+        </div>
+        <% if (movie.genres.length) { %>
+        <div class="genre-tags">
+          <% movie.genres.forEach(function(g) { %><a class="tag tag-link" href="/genre/<%= g.slug %>"><%= g.name %></a><% }); %>
+        </div>
+        <% } %>
+        <% if (movie.short_description) { %><p class="detail-tagline"><%= movie.short_description %></p><% } %>
+        <div class="detail-actions">
+          <% if (movie.official_watch_url) { %>
+            <a href="<%= movie.official_watch_url %>" target="_blank" rel="noopener" class="btn btn-primary btn-lg">▶ Watch on <%= movie.official_source_name || 'Official Source' %></a>
+          <% } %>
+          <% if (trailerEmbed) { %><button class="btn btn-secondary btn-lg" id="trailerBtn" type="button">Watch Trailer</button><% } %>
+        </div>
+        <p class="source-note">🔒 100% legal — streams from the official source<% if (movie.official_source_name) { %>: <strong><%= movie.official_source_name %></strong><% } %>.</p>
+        <%- include('../partials/share', { shareUrl: canonical, shareTitle: movie.title }) %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if (trailerEmbed) { %>
+<div class="trailer-modal" id="trailerModal" aria-hidden="true" role="dialog" aria-label="Trailer">
+  <div class="trailer-box">
+    <button class="trailer-close" id="trailerClose" aria-label="Close trailer">&times;</button>
+    <div class="video-embed"><iframe data-src="<%= trailerEmbed %>" title="<%= movie.title %> trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>
+  </div>
+</div>
+<% } %>
+
+<div class="container detail-sections">
+  <% if (typeof playerEmbed !== 'undefined' && playerEmbed) { %>
+  <section class="detail-block" id="watch">
+    <h2>Watch Now</h2>
+    <div class="player-wrap" data-player>
+      <iframe src="<%= playerEmbed %>" title="<%= movie.title %> — embedded video player" frameborder="0" loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div class="player-fallback" data-player-fallback hidden>
+      <p><strong>⚠️ The embedded video couldn't be loaded.</strong> It may have been removed, restricted, or temporarily unavailable on the provider's side.</p>
+      <% if (movie.official_watch_url) { %>
+        <a href="<%= movie.official_watch_url %>" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">Try watching on <%= movie.official_source_name || 'the official source' %> →</a>
+      <% } %>
+    </div>
+    <p class="source-note">Streaming directly from the official provider — no files are hosted on <%= siteName %>.</p>
+  </section>
+  <% } %>
+
+  <% if (movie.description) { %>
+  <section class="detail-block">
+    <h2>Storyline</h2>
+    <div class="rich-text"><%- movie.description %></div>
+  </section>
+  <% } %>
+
+  <section class="detail-block">
+    <h2>Details</h2>
+    <dl class="facts">
+      <% if (movie.director) { %><div><dt>Director</dt><dd><%= movie.director %></dd></div><% } %>
+      <% if (movie.release_year) { %><div><dt>Released</dt><dd><%= movie.release_year %></dd></div><% } %>
+      <% if (movie.runtime) { %><div><dt>Runtime</dt><dd><%= H.formatRuntime(movie.runtime) %></dd></div><% } %>
+      <% if (movie.language) { %><div><dt>Language</dt><dd><%= movie.language %></dd></div><% } %>
+      <% if (movie.country) { %><div><dt>Country</dt><dd><%= movie.country %></dd></div><% } %>
+      <% if (movie.tags) { %><div><dt>Tags</dt><dd><%= movie.tags %></dd></div><% } %>
+    </dl>
+  </section>
+
+  <% if (movie.actors.length || movie.directors.length) { %>
+  <section class="detail-block">
+    <h2>Cast &amp; Crew</h2>
+    <div class="cast-grid">
+      <% movie.directors.forEach(function(p) { %>
+        <div class="cast-card"><% if (p.image) { %><img src="<%= p.image %>" alt="<%= p.name %>" loading="lazy"><% } else { %><div class="cast-noimg"><%= p.name.charAt(0) %></div><% } %><strong><%= p.name %></strong><span>Director</span></div>
+      <% }); %>
+      <% movie.actors.forEach(function(p) { %>
+        <div class="cast-card"><% if (p.image) { %><img src="<%= p.image %>" alt="<%= p.name %>" loading="lazy"><% } else { %><div class="cast-noimg"><%= p.name.charAt(0) %></div><% } %><strong><%= p.name %></strong><span><%= p.character_name || (p.role.charAt(0).toUpperCase() + p.role.slice(1)) %></span></div>
+      <% }); %>
+    </div>
+  </section>
+  <% } %>
+
+  <% if (related.length) { %>
+  <section class="detail-block">
+    <h2>You May Also Like</h2>
+    <div class="grid grid-4">
+      <% related.forEach(function(item) { %><%- include('../partials/card', { item: item }) %><% }); %>
+    </div>
+  </section>
+  <% } %>
+</div>

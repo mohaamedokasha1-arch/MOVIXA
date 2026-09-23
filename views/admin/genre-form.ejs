@@ -1,0 +1,19 @@
+<div class="page-actions">
+  <h1 class="admin-h1"><%= isEdit ? 'Edit Genre' : 'Add Genre' %></h1>
+  <a href="/admin/genres" class="btn btn-ghost btn-sm">← Back to Genres</a>
+</div>
+<form method="POST" enctype="multipart/form-data" class="content-form narrow-form">
+  <fieldset class="form-card">
+    <div class="form-group"><label>Name *</label><input type="text" name="name" value="<%= genre.name %>" required maxlength="80" data-slug-source></div>
+    <div class="form-group"><label>Slug</label><input type="text" name="slug" value="<%= genre.slug %>" maxlength="80" data-slug-target placeholder="auto-generated"></div>
+    <div class="form-group"><label>Description</label><textarea name="description" rows="3" maxlength="500"><%= genre.description %></textarea></div>
+    <div class="form-group"><label>Icon / Image (optional)</label>
+      <% if (genre.image) { %><img class="form-preview" src="<%= genre.image %>" alt=""><% } %>
+      <input type="file" name="image_file" accept="image/*">
+      <input type="text" name="image" value="<%= genre.image %>" placeholder="...or paste image URL" maxlength="500">
+    </div>
+    <div class="form-group"><label>SEO Title</label><input type="text" name="seo_title" value="<%= genre.seo_title %>" maxlength="200"></div>
+    <div class="form-group"><label>SEO Description</label><textarea name="seo_description" rows="2" maxlength="200"><%= genre.seo_description %></textarea></div>
+    <button type="submit" class="btn btn-primary btn-lg"><%= isEdit ? 'Update Genre' : 'Create Genre' %></button>
+  </fieldset>
+</form>
