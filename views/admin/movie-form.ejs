@@ -57,13 +57,21 @@
           <div class="form-group"><label for="videoProvider">Video Source</label>
             <select name="video_provider" id="videoProvider">
               <% videoOptions.forEach(function(o) { %>
-              <option value="<%= o.id %>" <%= movie.video_provider === o.id ? 'selected' : '' %>><%= o.label %></option>
+              <option value="<%= o.id %>" <%= movie.video_provider === o.id ? 'selected' : '' %> data-label="<%= o.inputLabel || '' %>" data-hint="<%= o.hint || '' %>"><%= o.label %></option>
               <% }); %>
             </select>
           </div>
           <div class="form-group" id="videoInputGroup"><label for="videoInput" id="videoInputLabel">Video ID or Embed URL</label>
-            <input type="text" name="video_input" id="videoInput" value="<%= movie.video_input || '' %>" maxlength="2000" placeholder="e.g. x8abc12 or https://..." autocomplete="off">
+            <div class="video-input-row">
+              <input type="text" name="video_input" id="videoInput" value="<%= movie.video_input || '' %>" maxlength="2000" placeholder="e.g. x8abc12 or https://..." autocomplete="off">
+              <button type="button" class="btn btn-secondary btn-sm" id="videoPreviewBtn">Preview</button>
+            </div>
             <small class="muted" id="videoInputHint"></small>
+            <div class="video-preview-box" id="videoPreviewBox" hidden>
+              <div class="video-preview-frame" id="videoPreviewFrame"></div>
+              <p class="video-preview-error" id="videoPreviewError" hidden></p>
+              <small class="muted" id="videoPreviewUrl"></small>
+            </div>
           </div>
         </div>
         <% if (movie.video_embed_url) { %>

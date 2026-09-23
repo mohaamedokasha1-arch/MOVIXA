@@ -11,6 +11,8 @@
  *     hosts: ['example.com', 'player.example.com'],   // without www.
  *     extract: (urlObj) => 'video-id' | null,          // parse ID from any provider URL
  *     buildEmbed: (id) => 'https://.../embed/' + id,   // canonical embed URL
+ *     idPattern: /^[A-Za-z0-9]+$/,                     // (optional) bare-ID validation
+ *     idExample: 'abc123',                             // (optional) shown in admin hints
  *   });
  * ...and add it to ADMIN_VIDEO_OPTIONS below if admins should select it directly.
  */
@@ -27,8 +29,14 @@ function registerProvider(id, def) {
     label: def.label,
     hosts: def.hosts.map((h) => String(h).toLowerCase().replace(/^www\./, '')),
     extract: def.extract,
-    buildEmbed: def.buildEmbed
+    buildEmbed: def.buildEmbed,
+    idPattern: def.idPattern || null,
+    idExample: def.idExample || ''
   });
+}
+
+function getProvider(id) {
+  return providers.get(String(id || '').toLowerCase()) || null;
 }
 
 function stripWww(host) {
@@ -95,32 +103,81 @@ function extractDailymotion(u) {
   return null;
 }
 
+const DRIVE_ID = /^[A-Za-z0-9_-]{10,}$/;
+function extractDrive(u) {
+  // https://drive.google.com/file/d/FILE_ID/view (or /preview, /edit...)
+  const m = (u.pathname || '').match(/\/file\/d\/([A-Za-z0-9_-]+)/);
+  if (m && DRIVE_ID.test(m[1])) return m[1];
+  // https://drive.google.com/open?id=FILE_ID  |  /uc?id=FILE_ID / /uc?export=download&id=FILE_ID
+  const q = (u.searchParams.get('id') || '').trim();
+  if (DRIVE_ID.test(q)) return q;
+  return null;
+}
+
 registerProvider('youtube', {
   label: 'YouTube',
   hosts: ['youtube.com', 'm.youtube.com', 'youtu.be', 'youtube-nocookie.com'],
   extract: extractYouTube,
-  buildEmbed: (id) => 'https://www.youtube.com/embed/' + id
+  buildEmbed: (id) => 'https://www.youtube.com/embed/' + id,
+  idPattern: YT_ID,
+  idExample: 'aqz-KE-bpKQ'
 });
 
 registerProvider('vimeo', {
   label: 'Vimeo',
   hosts: ['vimeo.com', 'player.vimeo.com'],
   extract: extractVimeo,
-  buildEmbed: (id) => 'https://player.vimeo.com/video/' + id
+  buildEmbed: (id) => 'https://player.vimeo.com/video/' + id,
+  idPattern: VIMEO_ID,
+  idExample: '123456789'
 });
 
 registerProvider('dailymotion', {
   label: 'Dailymotion',
   hosts: ['dailymotion.com', 'geo.dailymotion.com', 'dai.ly'],
   extract: extractDailymotion,
-  buildEmbed: (id) => 'https://www.dailymotion.com/embed/video/' + id
+  buildEmbed: (id) => 'https://www.dailymotion.com/embed/video/' + id,
+  idPattern: DM_ID,
+  idExample: 'x8abc12'
+});
+
+registerProvider('googledrive', {
+  label: 'Google Drive',
+  hosts: ['drive.google.com'],
+  extract: extractDrive,
+  buildEmbed: (id) => 'https://drive.google.com/file/d/' + id + '/preview',
+  idPattern: DRIVE_ID,
+  idExample: '1A2b3C4d5E6f7G8h9I0jKLmnOPqRs'
 });
 
 /* ---------- admin-facing options ---------- */
 const ADMIN_VIDEO_OPTIONS = [
   { id: 'none', label: 'No embedded player (external watch link only)' },
-  { id: 'dailymotion', label: 'Dailymotion' },
-  { id: 'custom', label: 'Custom Embed (YouTube / Vimeo / Dailymotion URL)' }
+  {
+    id: 'dailymotion', label: 'Dailymotion',
+    inputLabel: 'Dailymotion Video ID or Embed URL',
+    hint: 'Paste the Video ID (e.g. x8abc12) or any Dailymotion video / embed URL.'
+  },
+  {
+    id: 'youtube', label: 'YouTube',
+    inputLabel: 'YouTube Video ID or Embed URL',
+    hint: 'Paste the Video ID (e.g. aqz-KE-bpKQ) or any YouTube watch / embed / Shorts URL.'
+  },
+  {
+    id: 'vimeo', label: 'Vimeo',
+    inputLabel: 'Vimeo Video ID or Embed URL',
+    hint: 'Paste the numeric Video ID (e.g. 123456789) or any Vimeo video / player URL.'
+  },
+  {
+    id: 'googledrive', label: 'Google Drive',
+    inputLabel: 'Google Drive Share / Embed URL',
+    hint: 'Paste the file sharing link (.../file/d/FILE_ID/...) or preview URL. The file must be shared as "Anyone with the link". Nothing is downloaded to our server.'
+  },
+  {
+    id: 'custom', label: 'Custom Embed (other authorized provider URL)',
+    inputLabel: 'Authorized Embed URL',
+    hint: 'Paste an https video URL from an authorized provider (YouTube, Vimeo, Dailymotion, Google Drive).'
+  }
 ];
 
 /* ---------- validation / normalization ---------- */
@@ -145,7 +202,7 @@ function normalizeEmbedUrl(raw) {
   }
   const provider = findProviderByHost(u.hostname);
   if (!provider) {
-    return { ok: false, error: `Videos from "${u.hostname}" are not permitted. Only authorized providers (YouTube, Vimeo, Dailymotion) may be embedded.` };
+    return { ok: false, error: `Videos from "${u.hostname}" are not permitted. Only authorized providers (YouTube, Vimeo, Dailymotion, Google Drive) may be embedded.` };
   }
   const id = provider.extract(u);
   if (!id) {
@@ -161,25 +218,24 @@ function parseVideoSource(providerId, input) {
   if (p === 'none' || p === '') {
     return { ok: true, provider: 'none', videoId: '', embedUrl: '' };
   }
-  if (p === 'dailymotion') {
-    if (!value) return { ok: false, error: 'Enter a Dailymotion Video ID or Embed URL.' };
-    if (DM_ID.test(value)) {
-      return { ok: true, provider: 'dailymotion', videoId: value, embedUrl: providers.get('dailymotion').buildEmbed(value) };
-    }
-    const n = normalizeEmbedUrl(value);
-    if (!n.ok) return n;
-    if (n.provider !== 'dailymotion') {
-      return { ok: false, error: 'That URL is not a Dailymotion video. Use “Custom Embed” for other providers.' };
-    }
-    return { ok: true, provider: 'dailymotion', videoId: n.videoId, embedUrl: n.embedUrl };
-  }
   if (p === 'custom') {
     if (!value) return { ok: false, error: 'Enter an authorized Embed URL.' };
     const n = normalizeEmbedUrl(value);
     if (!n.ok) return n;
     return { ok: true, provider: 'custom', videoId: n.videoId, embedUrl: n.embedUrl, sourceProvider: n.provider };
   }
-  return { ok: false, error: 'Unknown video provider selected.' };
+  const provider = getProvider(p);
+  if (!provider) return { ok: false, error: 'Unknown video provider selected.' };
+  if (!value) return { ok: false, error: `Enter a ${provider.label} Video ID or Embed URL.` };
+  if (provider.idPattern && provider.idPattern.test(value)) {
+    return { ok: true, provider: provider.id, videoId: value, embedUrl: provider.buildEmbed(value) };
+  }
+  const n = normalizeEmbedUrl(value);
+  if (!n.ok) return n;
+  if (n.provider !== provider.id) {
+    return { ok: false, error: `That URL is not a ${provider.label} video. Use “Custom Embed” for other providers.` };
+  }
+  return { ok: true, provider: provider.id, videoId: n.videoId, embedUrl: n.embedUrl };
 }
 
 /** Re-validate a stored embed URL at render time. Returns safe URL or ''. */
@@ -195,6 +251,7 @@ function isAllowedEmbedUrl(url) {
 
 module.exports = {
   registerProvider,
+  getProvider,
   normalizeEmbedUrl,
   parseVideoSource,
   safeEmbedUrl,

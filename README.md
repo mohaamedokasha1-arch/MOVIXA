@@ -58,12 +58,15 @@ Movies can show a responsive embedded player on their page, streamed directly fr
 
 **Workflow:** Admin → Movies → Add/Edit → **Video Source** → choose:
 - **Dailymotion** — paste the Video ID (e.g. `x8abc12`) or any Dailymotion video/embed URL (`dailymotion.com`, `geo.dailymotion.com` player, `dai.ly` links all work)
-- **Custom Embed** — paste an authorized `https://` video URL from YouTube, Vimeo or Dailymotion (watch links and full `<iframe>` snippets are accepted and normalized to a clean canonical embed URL)
+- **YouTube** — paste the Video ID (e.g. `aqz-KE-bpKQ`) or any watch / embed / Shorts / `youtu.be` URL
+- **Vimeo** — paste the numeric Video ID (e.g. `123456789`) or any Vimeo video / player URL
+- **Google Drive** — paste the file's sharing link (`.../file/d/FILE_ID/...`), `open?id=` or `uc?id=` URL. The file must be shared as "Anyone with the link". Displayed via Drive's preview player; nothing is ever downloaded to our server
+- **Custom Embed** — paste an authorized `https://` video URL from another compatible provider (watch links and full `<iframe>` snippets are accepted and normalized to a clean canonical embed URL)
 - **No embedded player** — external watch-link only
 
-The source can be changed or removed anytime from the same form — no code edits. If the provider's player fails to load, the page shows a clear fallback message with a link to the official source instead of breaking.
+Use the **Preview** button in the form to verify the player before saving. The source can be changed or removed anytime from the same form — no code edits. If the provider's player fails to load, the page shows a clear fallback message with a link to the official source instead of breaking.
 
-**Safety:** URLs are validated server-side (HTTPS-only, approved-provider allowlist, ID extraction) and re-validated at render time; only the normalized URL is ever placed in an `iframe src` (escaped), so arbitrary scripts can never be injected. CSP `frame-src` covers YouTube, Vimeo and Dailymotion.
+**Safety:** URLs are validated server-side (HTTPS-only, approved-provider allowlist, ID extraction) and re-validated at render time; only the normalized URL is ever placed in an `iframe src` (escaped), so arbitrary scripts can never be injected. CSP `frame-src` covers YouTube, Vimeo, Dailymotion and Google Drive.
 
 **Adding a provider:** register it in `src/video-providers.js` (`registerProvider(id, { label, hosts, extract, buildEmbed })`), add its player host to the CSP `frameSrc` list in `server.js`, and it becomes available to Custom Embed immediately.
 

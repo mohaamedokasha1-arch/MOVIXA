@@ -137,6 +137,15 @@ img { max-width: 100%; }
 .fav-preview { max-width: 32px; }
 .publish-btns { margin-top: 14px; }
 .seasons-strip { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.video-input-row { display: flex; gap: 8px; align-items: flex-start; }
+.video-input-row input { flex: 1; }
+.video-input-row .btn { white-space: nowrap; margin-top: 0; }
+.video-preview-box { margin-top: 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+.video-preview-frame { position: relative; aspect-ratio: 16/9; background: #000; border-radius: 6px; overflow: hidden; max-width: 480px; }
+.video-preview-frame:empty { display: none; }
+.video-preview-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-preview-error { color: var(--red); font-size: 13px; margin: 4px 0; }
+.video-preview-box small.muted { word-break: break-all; }
 .login-card .form-group input { margin-bottom: 0; }
 
 /* settings tabs */

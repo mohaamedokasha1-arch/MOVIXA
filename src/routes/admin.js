@@ -101,6 +101,13 @@ router.get('/logout', (req, res) => {
   req.session.destroy(() => res.redirect('/admin/login'));
 });
 
+/* Live embed preview for the movie form — validates exactly like save does. */
+router.get('/api/video-preview', requireAdmin, (req, res) => {
+  const r = V.parseVideoSource(req.query.provider, req.query.input);
+  if (!r.ok) return res.json({ ok: false, error: r.error });
+  res.json({ ok: true, provider: r.provider, videoId: r.videoId, embedUrl: r.embedUrl });
+});
+
 /* ============================================================
    DASHBOARD
 ============================================================ */
@@ -200,8 +207,8 @@ router.get('/movies/new', requireAdmin, (req, res) => {
 router.get('/movies/edit/:id', requireAdmin, (req, res) => {
   const movie = db.prepare('SELECT * FROM movies WHERE id = ?').get(req.params.id);
   if (!movie) { setFlash(req, 'error', 'Movie not found.'); return res.redirect('/admin/movies'); }
-  // Show the video ID for Dailymotion, otherwise the stored embed URL — editable without code.
-  movie.video_input = (movie.video_provider === 'dailymotion' && movie.video_id) ? movie.video_id : (movie.video_embed_url || '');
+  // Show the bare video ID for direct providers, otherwise the stored embed URL — editable without code.
+  movie.video_input = (V.getProvider(movie.video_provider) && movie.video_id) ? movie.video_id : (movie.video_embed_url || '');
   res.render('admin/movie-form', { layout: 'admin/layout', title: 'Edit Movie - MOVIXA Admin', active: 'movies', isEdit: true, ...movieFormData(movie) });
 });
 

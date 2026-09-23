@@ -29,26 +29,72 @@
     update();
   });
 
-  /* video source selector hints */
+  /* video source selector hints (labels/hints come from the server per option) */
   const vp = document.getElementById('videoProvider');
   const vg = document.getElementById('videoInputGroup');
   const vl = document.getElementById('videoInputLabel');
   const vh = document.getElementById('videoInputHint');
+  const vi = document.getElementById('videoInput');
   function syncVideoHint() {
     if (!vp || !vg) return;
-    if (vp.value === 'dailymotion') {
-      vg.style.display = '';
-      if (vl) vl.textContent = 'Dailymotion Video ID or Embed URL';
-      if (vh) vh.textContent = 'Paste the Video ID (e.g. x8abc12) or any Dailymotion video / embed URL.';
-    } else if (vp.value === 'custom') {
-      vg.style.display = '';
-      if (vl) vl.textContent = 'Authorized Embed URL';
-      if (vh) vh.textContent = 'Paste an https video URL from YouTube, Vimeo or Dailymotion (watch links work too).';
-    } else {
-      vg.style.display = 'none';
-    }
+    if (vp.value === 'none') { vg.style.display = 'none'; hideVideoPreview(); return; }
+    const opt = vp.options[vp.selectedIndex];
+    vg.style.display = '';
+    if (vl && opt.dataset.label) vl.textContent = opt.dataset.label;
+    if (vh) vh.textContent = opt.dataset.hint || '';
+    hideVideoPreview();
   }
   if (vp) { vp.addEventListener('change', syncVideoHint); syncVideoHint(); }
+  if (vi) vi.addEventListener('input', hideVideoPreview);
+
+  /* live video preview — validated server-side, same as save */
+  const vpb = document.getElementById('videoPreviewBtn');
+  const vbox = document.getElementById('videoPreviewBox');
+  const vframe = document.getElementById('videoPreviewFrame');
+  const verr = document.getElementById('videoPreviewError');
+  const vurl = document.getElementById('videoPreviewUrl');
+  function hideVideoPreview() {
+    if (!vbox) return;
+    vbox.hidden = true;
+    if (vframe) vframe.innerHTML = '';
+    if (verr) verr.hidden = true;
+    if (vurl) vurl.textContent = '';
+  }
+  if (vpb && vp && vi) {
+    vpb.addEventListener('click', async () => {
+      hideVideoPreview();
+      vpb.disabled = true;
+      vpb.textContent = 'Checking...';
+      try {
+        const res = await fetch('/admin/api/video-preview?provider=' + encodeURIComponent(vp.value) + '&input=' + encodeURIComponent(vi.value.trim()));
+        const data = await res.json();
+        vbox.hidden = false;
+        if (data.ok && data.embedUrl) {
+          const frame = document.createElement('iframe');
+          frame.src = data.embedUrl;
+          frame.title = 'Video preview';
+          frame.setAttribute('frameborder', '0');
+          frame.setAttribute('allowfullscreen', '');
+          frame.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+          vframe.appendChild(frame);
+          vurl.textContent = data.embedUrl;
+        } else if (data.ok) {
+          verr.textContent = 'No embedded player — only the external watch link will be shown.';
+          verr.hidden = false;
+        } else {
+          verr.textContent = data.error || 'Invalid video source.';
+          verr.hidden = false;
+        }
+      } catch (e) {
+        vbox.hidden = false;
+        verr.textContent = 'Preview failed. Check your connection and try again.';
+        verr.hidden = false;
+      } finally {
+        vpb.disabled = false;
+        vpb.textContent = 'Preview';
+      }
+    });
+  }
 
   /* check all */
   const checkAll = document.getElementById('checkAll');

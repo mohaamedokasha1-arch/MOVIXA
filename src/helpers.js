@@ -26,7 +26,7 @@ function cleanRich(html) {
       img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
       iframe: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen', 'title']
     },
-    allowedIframeHostnames: ['www.youtube.com', 'youtube.com', 'player.vimeo.com', 'vimeo.com', 'www.dailymotion.com', 'dailymotion.com', 'geo.dailymotion.com']
+    allowedIframeHostnames: ['www.youtube.com', 'youtube.com', 'player.vimeo.com', 'vimeo.com', 'www.dailymotion.com', 'dailymotion.com', 'geo.dailymotion.com', 'drive.google.com']
   });
 }
 
