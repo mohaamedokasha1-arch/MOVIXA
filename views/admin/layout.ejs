@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : 'MOVIXA Admin' %></title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <a class="admin-logo" href="/admin">
+        <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><rect x="1" y="4" width="30" height="24" rx="5" fill="#e50914"/><path d="M13 11.5v9l7.5-4.5z" fill="#fff"/></svg>
+        <span><%= siteName %> <em>Admin</em></span>
+      </a>
+      <nav class="admin-nav">
+        <a href="/admin" class="<%= active === 'dashboard' ? 'active' : '' %>">📊 Dashboard</a>
+        <a href="/admin/movies" class="<%= active === 'movies' ? 'active' : '' %>">🎬 Movies</a>
+        <a href="/admin/series" class="<%= active === 'series' ? 'active' : '' %>">📺 Series</a>
+        <a href="/admin/genres" class="<%= active === 'genres' ? 'active' : '' %>">🏷️ Genres</a>
+        <a href="/admin/cast" class="<%= active === 'cast' ? 'active' : '' %>">⭐ Cast &amp; Crew</a>
+        <a href="/admin/pages" class="<%= active === 'pages' ? 'active' : '' %>">📄 Pages</a>
+        <a href="/admin/media" class="<%= active === 'media' ? 'active' : '' %>">🖼️ Media</a>
+        <a href="/admin/messages" class="<%= active === 'messages' ? 'active' : '' %>">✉️ Messages</a>
+        <a href="/admin/subscribers" class="<%= active === 'subscribers' ? 'active' : '' %>">📬 Subscribers</a>
+        <% if (currentUser && currentUser.role === 'super_admin') { %>
+        <a href="/admin/users" class="<%= active === 'users' ? 'active' : '' %>">👥 Users</a>
+        <% } %>
+        <a href="/admin/settings" class="<%= active === 'settings' ? 'active' : '' %>">⚙️ Settings</a>
+      </nav>
+      <div class="admin-side-foot">
+        <a href="/" target="_blank" rel="noopener">🌐 View Site</a>
+        <a href="/admin/logout">🚪 Logout (<%= currentUser ? currentUser.username : '' %>)</a>
+      </div>
+    </aside>
+    <div class="admin-main">
+      <header class="admin-topbar">
+        <button class="admin-menu-btn" id="adminMenuBtn" aria-label="Toggle menu">☰</button>
+        <span class="admin-top-title"><%= typeof title !== 'undefined' ? title.replace(' - MOVIXA Admin', '') : 'Dashboard' %></span>
+        <a class="admin-view-site" href="/" target="_blank" rel="noopener">View Site ↗</a>
+      </header>
+      <div class="admin-content">
+        <% if (flash) { %><div class="alert alert-<%= flash.type %>"><%= flash.message %></div><% } %>
+        <%- body %>
+      </div>
+    </div>
+  </div>
+  <script src="/js/admin.js" defer></script>
+</body>
+</html>

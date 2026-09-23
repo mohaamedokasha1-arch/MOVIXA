@@ -1,0 +1,55 @@
+<div class="page-actions">
+  <div>
+    <a href="/admin/series/<%= show.id %>/season/<%= season.id %>/episodes" class="back-link">← <%= show.title %> — <%= season.title || ('Season ' + season.season_number) %></a>
+    <h1 class="admin-h1"><%= isEdit ? 'Edit Episode' : 'Add Episode' %></h1>
+  </div>
+</div>
+
+<form method="POST" enctype="multipart/form-data" class="content-form">
+  <div class="form-grid">
+    <div class="form-main">
+      <fieldset class="form-card">
+        <legend>Episode Info</legend>
+        <div class="form-row">
+          <div class="form-group"><label>Episode Number *</label><input type="number" name="episode_number" value="<%= ep.episode_number %>" min="1" required></div>
+          <div class="form-group"><label>Slug</label><input type="text" name="slug" value="<%= ep.slug %>" maxlength="200" placeholder="auto-generated"></div>
+        </div>
+        <div class="form-group"><label>Title *</label><input type="text" name="title" value="<%= ep.title %>" required maxlength="200"></div>
+        <div class="form-group"><label>Description</label><textarea name="description" rows="6" class="rich"><%= ep.description %></textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label>Air Date</label><input type="date" name="air_date" value="<%= ep.air_date %>"></div>
+          <div class="form-group"><label>Runtime (minutes)</label><input type="number" name="runtime" value="<%= ep.runtime %>" min="1"></div>
+        </div>
+        <div class="form-group"><label>Thumbnail</label>
+          <% if (ep.thumbnail_image) { %><img class="form-preview wide" src="<%= ep.thumbnail_image %>" alt="Current thumbnail"><% } %>
+          <input type="file" name="thumbnail_file" accept="image/*">
+          <input type="text" name="thumbnail_image" value="<%= ep.thumbnail_image %>" placeholder="...or paste image URL" maxlength="500">
+        </div>
+      </fieldset>
+      <fieldset class="form-card">
+        <legend>Legal Source</legend>
+        <p class="form-note">⚠️ Only link to sources you have rights to use.</p>
+        <div class="form-row">
+          <div class="form-group"><label>Official Watch URL</label><input type="url" name="official_watch_url" value="<%= ep.official_watch_url %>" maxlength="500"></div>
+          <div class="form-group"><label>Source Name</label><input type="text" name="official_source_name" value="<%= ep.official_source_name %>" maxlength="100"></div>
+        </div>
+      </fieldset>
+      <fieldset class="form-card">
+        <legend>SEO</legend>
+        <div class="form-group"><label>SEO Title</label><input type="text" name="seo_title" value="<%= ep.seo_title %>" maxlength="200"></div>
+        <div class="form-group"><label>SEO Description</label><textarea name="seo_description" rows="2" maxlength="200"><%= ep.seo_description %></textarea></div>
+      </fieldset>
+    </div>
+    <div class="form-side">
+      <fieldset class="form-card">
+        <legend>Publishing</legend>
+        <label class="radio"><input type="radio" name="status" value="published" <%= ep.status === 'published' ? 'checked' : '' %>> Published</label>
+        <label class="radio"><input type="radio" name="status" value="draft" <%= ep.status === 'draft' ? 'checked' : '' %>> Draft</label>
+        <div class="publish-btns">
+          <% if (!isEdit) { %><button type="submit" name="save_and_add" value="1" class="btn btn-ghost btn-block">Save &amp; Add Another</button><% } %>
+          <button type="submit" class="btn btn-primary btn-block btn-lg"><%= isEdit ? 'Update Episode' : 'Save Episode' %></button>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+</form>

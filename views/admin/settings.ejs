@@ -1,0 +1,64 @@
+<div class="page-actions"><h1 class="admin-h1">Settings</h1></div>
+<form method="POST" enctype="multipart/form-data" class="content-form">
+  <div class="settings-tabs">
+    <button type="button" class="settings-tab active" data-tab="general">General</button>
+    <button type="button" class="settings-tab" data-tab="social">Social Media</button>
+    <button type="button" class="settings-tab" data-tab="seo">SEO</button>
+    <button type="button" class="settings-tab" data-tab="legal">Legal</button>
+  </div>
+
+  <fieldset class="form-card settings-panel active" data-panel="general">
+    <legend>General</legend>
+    <div class="form-row">
+      <div class="form-group"><label>Site Name</label><input type="text" name="site_name" value="<%= s.site_name %>" maxlength="80"></div>
+      <div class="form-group"><label>Tagline</label><input type="text" name="tagline" value="<%= s.tagline %>" maxlength="120"></div>
+    </div>
+    <div class="form-group"><label>Site Description</label><textarea name="site_description" rows="2" maxlength="300"><%= s.site_description %></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Logo</label>
+        <% if (s.logo) { %><img class="form-preview logo-preview" src="<%= s.logo %>" alt="Logo"><% } %>
+        <input type="file" name="logo_file" accept="image/*">
+        <input type="text" name="logo" value="<%= s.logo %>" placeholder="...or paste image URL">
+      </div>
+      <div class="form-group"><label>Favicon</label>
+        <% if (s.favicon) { %><img class="form-preview fav-preview" src="<%= s.favicon %>" alt="Favicon"><% } %>
+        <input type="file" name="favicon_file" accept="image/*">
+        <input type="text" name="favicon" value="<%= s.favicon %>" placeholder="...or paste image URL">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Contact Email</label><input type="email" name="contact_email" value="<%= s.contact_email %>" maxlength="160"></div>
+      <div class="form-group"><label>Items Per Page</label><input type="number" name="movies_per_page" value="<%= s.movies_per_page %>" min="4" max="48"></div>
+      <div class="form-group"><label>Hero Slides</label><input type="number" name="hero_limit" value="<%= s.hero_limit %>" min="1" max="10"></div>
+    </div>
+    <label class="check"><input type="checkbox" name="maintenance_mode" value="1" <%= s.maintenance_mode === '1' ? 'checked' : '' %>> 🔧 Maintenance Mode (only admins can browse)</label>
+  </fieldset>
+
+  <fieldset class="form-card settings-panel" data-panel="social">
+    <legend>Social Media</legend>
+    <div class="form-row">
+      <div class="form-group"><label>Facebook URL</label><input type="url" name="social_facebook" value="<%= s.social_facebook %>" maxlength="300"></div>
+      <div class="form-group"><label>Twitter / X URL</label><input type="url" name="social_twitter" value="<%= s.social_twitter %>" maxlength="300"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Instagram URL</label><input type="url" name="social_instagram" value="<%= s.social_instagram %>" maxlength="300"></div>
+      <div class="form-group"><label>YouTube URL</label><input type="url" name="social_youtube" value="<%= s.social_youtube %>" maxlength="300"></div>
+    </div>
+  </fieldset>
+
+  <fieldset class="form-card settings-panel" data-panel="seo">
+    <legend>SEO</legend>
+    <div class="form-group"><label>Default SEO Title Template (use {title})</label><input type="text" name="seo_title_template" value="<%= s.seo_title_template %>" maxlength="200"></div>
+    <div class="form-group"><label>Default SEO Description</label><textarea name="seo_default_description" rows="2" maxlength="300"><%= s.seo_default_description %></textarea></div>
+    <div class="form-group"><label>Analytics Code (e.g., Google Analytics)</label><textarea name="analytics_code" rows="4" class="code" placeholder="Paste <script> snippet..."><%= s.analytics_code %></textarea></div>
+    <div class="form-group"><label>Search Console Verification Code</label><textarea name="search_console_code" rows="2" class="code" placeholder="Paste <meta> verification tag..."><%= s.search_console_code %></textarea></div>
+  </fieldset>
+
+  <fieldset class="form-card settings-panel" data-panel="legal">
+    <legend>Legal</legend>
+    <div class="form-group"><label>DMCA Contact Email</label><input type="email" name="dmca_email" value="<%= s.dmca_email %>" maxlength="160"></div>
+    <div class="form-group"><label>Copyright Notice (shown in footer)</label><textarea name="copyright_notice" rows="3" maxlength="500"><%= s.copyright_notice %></textarea></div>
+  </fieldset>
+
+  <button type="submit" class="btn btn-primary btn-lg">Save Settings</button>
+</form>

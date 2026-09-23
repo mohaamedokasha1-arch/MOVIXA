@@ -1,0 +1,64 @@
+<div class="page-actions">
+  <h1 class="admin-h1">Movies (<%= pg.total %>)</h1>
+  <a href="/admin/movies/new" class="btn btn-primary">+ Add New Movie</a>
+</div>
+
+<form class="admin-filters" method="GET" action="/admin/movies">
+  <input type="search" name="q" value="<%= filters.q %>" placeholder="Search by title...">
+  <select name="status">
+    <option value="">All statuses</option>
+    <option value="published" <%= filters.status === 'published' ? 'selected' : '' %>>Published</option>
+    <option value="draft" <%= filters.status === 'draft' ? 'selected' : '' %>>Draft</option>
+    <option value="archived" <%= filters.status === 'archived' ? 'selected' : '' %>>Archived</option>
+  </select>
+  <select name="featured">
+    <option value="">Featured: all</option>
+    <option value="1" <%= filters.featured === '1' ? 'selected' : '' %>>Featured</option>
+    <option value="0" <%= filters.featured === '0' ? 'selected' : '' %>>Not featured</option>
+  </select>
+  <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+</form>
+
+<% if (items.length) { %>
+<form method="POST" action="/admin/movies/bulk" id="bulkForm">
+  <div class="bulk-bar">
+    <label><input type="checkbox" id="checkAll"> Select all</label>
+    <select name="bulk_action" required>
+      <option value="">Bulk actions...</option>
+      <option value="publish">Publish</option>
+      <option value="draft">Move to draft</option>
+      <option value="archive">Archive</option>
+      <option value="feature">Mark featured</option>
+      <option value="unfeature">Remove featured</option>
+      <option value="delete">Delete</option>
+    </select>
+    <button type="submit" class="btn btn-secondary btn-sm" data-confirm="Apply bulk action to selected movies?">Apply</button>
+  </div>
+  <div class="table-wrap">
+    <table class="admin-table">
+      <thead><tr><th></th><th>Poster</th><th>Title</th><th>Year</th><th>Status</th><th>Featured</th><th>Views</th><th>Actions</th></tr></thead>
+      <tbody>
+        <% items.forEach(function(m) { %>
+        <tr>
+          <td><input type="checkbox" name="ids" value="<%= m.id %>" class="row-check"></td>
+          <td><% if (m.poster_image) { %><img class="thumb" src="<%= m.poster_image %>" alt="" loading="lazy"><% } else { %><span class="muted">—</span><% } %></td>
+          <td><strong><%= m.title %></strong><br><small class="muted">/movie/<%= m.slug %></small></td>
+          <td><%= m.release_year || '—' %></td>
+          <td><span class="pill pill-<%= m.status %>"><%= m.status %></span></td>
+          <td><%= m.featured ? '⭐' : '—' %></td>
+          <td><%= H.formatCount(m.view_count) %></td>
+          <td class="actions">
+            <a href="/admin/movies/edit/<%= m.id %>" class="btn btn-secondary btn-xs">Edit</a>
+            <a href="/movie/<%= m.slug %>" target="_blank" rel="noopener" class="btn btn-ghost btn-xs">View</a>
+            <button type="button" class="btn btn-danger btn-xs" data-delete="/admin/movies/delete/<%= m.id %>">Delete</button>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</form>
+<%- include('../partials/pagination', { pg: pg, linkFor: function(p) { return `?q=${encodeURIComponent(filters.q)}&status=${filters.status}&featured=${filters.featured}&page=${p}`; } }) %>
+<% } else { %>
+<div class="empty-state"><h2>No movies found</h2><p>Add your first movie to get started.</p><a href="/admin/movies/new" class="btn btn-primary">+ Add New Movie</a></div>
+<% } %>

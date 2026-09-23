@@ -1,0 +1,27 @@
+<div class="page-actions">
+  <div>
+    <a href="/admin/series/<%= show.id %>/seasons" class="back-link">← <%= show.title %> — Seasons</a>
+    <h1 class="admin-h1"><%= isEdit ? 'Edit Season' : 'Add Season' %></h1>
+  </div>
+</div>
+
+<form method="POST" enctype="multipart/form-data" class="content-form narrow-form">
+  <fieldset class="form-card">
+    <div class="form-row">
+      <div class="form-group"><label>Season Number *</label><input type="number" name="season_number" value="<%= season.season_number %>" min="1" required></div>
+      <div class="form-group"><label>Air Year</label><input type="number" name="air_year" value="<%= season.air_year %>" min="1900" max="2100"></div>
+    </div>
+    <div class="form-group"><label>Title</label><input type="text" name="title" value="<%= season.title %>" maxlength="200" placeholder="Season 1"></div>
+    <div class="form-group"><label>Description</label><textarea name="description" rows="5" class="rich"><%= season.description %></textarea></div>
+    <div class="form-group"><label>Poster Image</label>
+      <% if (season.poster_image) { %><img class="form-preview" src="<%= season.poster_image %>" alt="Current poster"><% } %>
+      <input type="file" name="poster_file" accept="image/*">
+      <input type="text" name="poster_image" value="<%= season.poster_image %>" placeholder="...or paste image URL" maxlength="500">
+    </div>
+    <div class="form-group"><label>Status</label>
+      <label class="radio"><input type="radio" name="status" value="published" <%= season.status === 'published' ? 'checked' : '' %>> Published</label>
+      <label class="radio"><input type="radio" name="status" value="draft" <%= season.status === 'draft' ? 'checked' : '' %>> Draft</label>
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg"><%= isEdit ? 'Update Season' : 'Save & Add Episodes' %></button>
+  </fieldset>
+</form>

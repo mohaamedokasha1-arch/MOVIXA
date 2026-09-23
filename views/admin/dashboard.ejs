@@ -1,0 +1,67 @@
+<div class="page-actions">
+  <h1 class="admin-h1">Welcome back, <%= currentUser.username %>! 👋</h1>
+  <div class="btn-row">
+    <a href="/admin/movies/new" class="btn btn-primary">+ Add Movie</a>
+    <a href="/admin/series/new" class="btn btn-secondary">+ Add Series</a>
+  </div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card"><span class="stat-num"><%= stats.movies %></span><span class="stat-label">Movies (<%= stats.moviesPublished %> published)</span></div>
+  <div class="stat-card"><span class="stat-num"><%= stats.series %></span><span class="stat-label">Series</span></div>
+  <div class="stat-card"><span class="stat-num"><%= stats.episodes %></span><span class="stat-label">Episodes</span></div>
+  <div class="stat-card"><span class="stat-num"><%= H.formatCount(stats.views) %></span><span class="stat-label">Total Views</span></div>
+  <div class="stat-card"><span class="stat-num"><%= stats.genres %></span><span class="stat-label">Genres</span></div>
+  <div class="stat-card"><span class="stat-num"><%= stats.messages %></span><span class="stat-label">Unread Messages</span></div>
+  <div class="stat-card"><span class="stat-num"><%= stats.subscribers %></span><span class="stat-label">Subscribers</span></div>
+</div>
+
+<div class="dash-grid">
+  <div class="dash-panel">
+    <div class="panel-head"><h2>Top Content</h2></div>
+    <% if (topContent.length) { %>
+    <table class="admin-table">
+      <thead><tr><th>Title</th><th>Type</th><th>Views</th></tr></thead>
+      <tbody>
+        <% topContent.forEach(function(t) { %>
+        <tr><td><a href="/<%= t.type === 'movie' ? 'movie' : 'series' %>/<%= t.slug %>" target="_blank" rel="noopener"><%= t.title %></a></td><td><span class="pill"><%= t.type %></span></td><td><%= H.formatCount(t.view_count) %></td></tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <% } else { %><p class="muted">No content yet.</p><% } %>
+  </div>
+  <div class="dash-panel">
+    <div class="panel-head"><h2>Recent Movies</h2><a href="/admin/movies">All →</a></div>
+    <ul class="recent-list">
+      <% recentMovies.forEach(function(m) { %>
+      <li><a href="/admin/movies/edit/<%= m.id %>"><%= m.title %></a><span class="pill pill-<%= m.status %>"><%= m.status %></span><small><%= H.timeAgo(m.created_at) %></small></li>
+      <% }); %>
+      <% if (!recentMovies.length) { %><li class="muted">No movies yet.</li><% } %>
+    </ul>
+    <div class="panel-head"><h2>Recent Series</h2><a href="/admin/series">All →</a></div>
+    <ul class="recent-list">
+      <% recentSeries.forEach(function(s) { %>
+      <li><a href="/admin/series/edit/<%= s.id %>"><%= s.title %></a><span class="pill pill-<%= s.status %>"><%= s.status %></span><small><%= H.timeAgo(s.created_at) %></small></li>
+      <% }); %>
+      <% if (!recentSeries.length) { %><li class="muted">No series yet.</li><% } %>
+    </ul>
+  </div>
+  <div class="dash-panel">
+    <div class="panel-head"><h2>Latest Messages</h2><a href="/admin/messages">All →</a></div>
+    <ul class="recent-list">
+      <% recentMessages.forEach(function(m) { %>
+      <li><a href="/admin/messages"><strong><%= m.name %></strong> — <%= (m.subject || m.message).slice(0, 40) %></a><% if (!m.is_read) { %><span class="pill pill-new">new</span><% } %><small><%= H.timeAgo(m.created_at) %></small></li>
+      <% }); %>
+      <% if (!recentMessages.length) { %><li class="muted">No messages.</li><% } %>
+    </ul>
+    <div class="panel-head"><h2>Quick Actions</h2></div>
+    <div class="btn-row wrap">
+      <a href="/admin/movies/new" class="btn btn-secondary btn-sm">+ Movie</a>
+      <a href="/admin/series/new" class="btn btn-secondary btn-sm">+ Series</a>
+      <a href="/admin/genres/new" class="btn btn-secondary btn-sm">+ Genre</a>
+      <a href="/admin/cast/new" class="btn btn-secondary btn-sm">+ Person</a>
+      <a href="/admin/media" class="btn btn-secondary btn-sm">Upload Media</a>
+      <a href="/admin/settings" class="btn btn-secondary btn-sm">Settings</a>
+    </div>
+  </div>
+</div>

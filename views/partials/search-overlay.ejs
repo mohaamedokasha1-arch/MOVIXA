@@ -1,0 +1,11 @@
+<div class="search-overlay" id="searchOverlay" aria-hidden="true" role="dialog" aria-label="Search">
+  <div class="search-overlay-inner">
+    <button class="search-close" id="searchClose" aria-label="Close search">&times;</button>
+    <form class="search-form" action="/search" method="GET">
+      <input type="search" name="q" id="searchInput" placeholder="Search movies, series, episodes..." autocomplete="off" aria-label="Search">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    <div class="search-suggest" id="searchSuggest"></div>
+    <div class="search-hint">Press <kbd>Enter</kbd> for full results &middot; <kbd>Esc</kbd> to close</div>
+  </div>
+</div>

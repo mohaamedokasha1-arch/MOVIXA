@@ -1,0 +1,34 @@
+<div class="page-actions">
+  <div>
+    <a href="/admin/series/edit/<%= show.id %>" class="back-link">← <%= show.title %></a>
+    <h1 class="admin-h1">Seasons</h1>
+  </div>
+  <a href="/admin/series/<%= show.id %>/seasons/new" class="btn btn-primary">+ Add Season</a>
+</div>
+
+<% if (seasons.length) { %>
+<div class="table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>#</th><th>Poster</th><th>Title</th><th>Air Year</th><th>Episodes</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% seasons.forEach(function(s) { %>
+      <tr>
+        <td><strong>S<%= s.season_number %></strong></td>
+        <td><% if (s.poster_image) { %><img class="thumb" src="<%= s.poster_image %>" alt="" loading="lazy"><% } else { %><span class="muted">—</span><% } %></td>
+        <td><%= s.title || ('Season ' + s.season_number) %></td>
+        <td><%= s.air_year || '—' %></td>
+        <td><%= s.episodes_count %></td>
+        <td><span class="pill pill-<%= s.status %>"><%= s.status %></span></td>
+        <td class="actions">
+          <a href="/admin/series/<%= show.id %>/seasons/edit/<%= s.id %>" class="btn btn-secondary btn-xs">Edit</a>
+          <a href="/admin/series/<%= show.id %>/season/<%= s.id %>/episodes" class="btn btn-ghost btn-xs">Episodes</a>
+          <button type="button" class="btn btn-danger btn-xs" data-delete="/admin/series/<%= show.id %>/seasons/delete/<%= s.id %>">Delete</button>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+<% } else { %>
+<div class="empty-state"><h2>No seasons yet</h2><p>Add the first season for this series.</p><a href="/admin/series/<%= show.id %>/seasons/new" class="btn btn-primary">+ Add Season</a></div>
+<% } %>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - MOVIXA</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="login-body">
+  <div class="login-card">
+    <a class="login-logo" href="/">
+      <svg viewBox="0 0 32 32" width="34" height="34" aria-hidden="true"><rect x="1" y="4" width="30" height="24" rx="5" fill="#e50914"/><path d="M13 11.5v9l7.5-4.5z" fill="#fff"/></svg>
+      <span><%= typeof siteName !== 'undefined' ? siteName : 'MOVIXA' %></span>
+    </a>
+    <h1>Admin Login</h1>
+    <p class="login-sub">Sign in to manage your platform</p>
+    <% if (typeof error !== 'undefined' && error) { %><div class="alert alert-error"><%= error %></div><% } %>
+    <% if (typeof flash !== 'undefined' && flash) { %><div class="alert alert-<%= flash.type %>"><%= flash.message %></div><% } %>
+    <form method="POST" action="/admin/login">
+      <input type="hidden" name="next" value="<%= typeof next !== 'undefined' ? next : '/admin' %>">
+      <div class="form-group">
+        <label for="username">Username or Email</label>
+        <input type="text" id="username" name="username" required autocomplete="username" autofocus>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+      </div>
+      <label class="check"><input type="checkbox" name="remember" value="1"> Remember me</label>
+      <button type="submit" class="btn btn-primary btn-block btn-lg">Log In</button>
+    </form>
+    <a class="login-back" href="/">← Back to site</a>
+  </div>
+</body>
+</html>

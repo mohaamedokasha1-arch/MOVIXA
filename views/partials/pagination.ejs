@@ -1,0 +1,14 @@
+<% /* Expects: pg {page, pages}, linkFor(page) */ %>
+<% if (pg.pages > 1) { %>
+<nav class="pagination" aria-label="Pagination">
+  <% if (pg.hasPrev) { %><a class="page-btn" href="<%= linkFor(pg.prev) %>" rel="prev">← Prev</a><% } %>
+  <% 
+    let start = Math.max(1, pg.page - 2), end = Math.min(pg.pages, pg.page + 2);
+    if (start > 1) { %><a class="page-btn" href="<%= linkFor(1) %>">1</a><% if (start > 2) { %><span class="page-dots">…</span><% } %><% }
+    for (let p = start; p <= end; p++) { %>
+      <% if (p === pg.page) { %><span class="page-btn current" aria-current="page"><%= p %></span><% } else { %><a class="page-btn" href="<%= linkFor(p) %>"><%= p %></a><% } %>
+  <% }
+    if (end < pg.pages) { %><% if (end < pg.pages - 1) { %><span class="page-dots">…</span><% } %><a class="page-btn" href="<%= linkFor(pg.pages) %>"><%= pg.pages %></a><% } %>
+  <% if (pg.hasNext) { %><a class="page-btn" href="<%= linkFor(pg.next) %>" rel="next">Next →</a><% } %>
+</nav>
+<% } %>

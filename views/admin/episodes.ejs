@@ -1,0 +1,34 @@
+<div class="page-actions">
+  <div>
+    <a href="/admin/series/<%= show.id %>/seasons" class="back-link">← <%= show.title %> — Seasons</a>
+    <h1 class="admin-h1"><%= season.title || ('Season ' + season.season_number) %> — Episodes</h1>
+  </div>
+  <a href="/admin/series/<%= show.id %>/season/<%= season.id %>/episodes/new" class="btn btn-primary">+ Add Episode</a>
+</div>
+
+<% if (episodes.length) { %>
+<div class="table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>#</th><th>Thumb</th><th>Title</th><th>Air Date</th><th>Runtime</th><th>Status</th><th>Views</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% episodes.forEach(function(e) { %>
+      <tr>
+        <td><strong>E<%= e.episode_number %></strong></td>
+        <td><% if (e.thumbnail_image) { %><img class="thumb wide-thumb" src="<%= e.thumbnail_image %>" alt="" loading="lazy"><% } else { %><span class="muted">—</span><% } %></td>
+        <td><%= e.title %></td>
+        <td><%= e.air_date || '—' %></td>
+        <td><%= e.runtime ? e.runtime + 'm' : '—' %></td>
+        <td><span class="pill pill-<%= e.status %>"><%= e.status %></span></td>
+        <td><%= H.formatCount(e.view_count) %></td>
+        <td class="actions">
+          <a href="/admin/series/<%= show.id %>/season/<%= season.id %>/episodes/edit/<%= e.id %>" class="btn btn-secondary btn-xs">Edit</a>
+          <button type="button" class="btn btn-danger btn-xs" data-delete="/admin/series/<%= show.id %>/season/<%= season.id %>/episodes/delete/<%= e.id %>">Delete</button>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+<% } else { %>
+<div class="empty-state"><h2>No episodes yet</h2><p>Add the first episode for this season.</p><a href="/admin/series/<%= show.id %>/season/<%= season.id %>/episodes/new" class="btn btn-primary">+ Add Episode</a></div>
+<% } %>

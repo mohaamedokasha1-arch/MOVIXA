@@ -1,0 +1,45 @@
+<div class="page-actions">
+  <h1 class="admin-h1">Series (<%= pg.total %>)</h1>
+  <a href="/admin/series/new" class="btn btn-primary">+ Add New Series</a>
+</div>
+
+<form class="admin-filters" method="GET" action="/admin/series">
+  <input type="search" name="q" value="<%= filters.q %>" placeholder="Search by title...">
+  <select name="status">
+    <option value="">All statuses</option>
+    <option value="published" <%= filters.status === 'published' ? 'selected' : '' %>>Published</option>
+    <option value="draft" <%= filters.status === 'draft' ? 'selected' : '' %>>Draft</option>
+    <option value="archived" <%= filters.status === 'archived' ? 'selected' : '' %>>Archived</option>
+  </select>
+  <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+</form>
+
+<% if (items.length) { %>
+<div class="table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>Poster</th><th>Title</th><th>Years</th><th>Seasons</th><th>Episodes</th><th>Status</th><th>Views</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% items.forEach(function(s) { %>
+      <tr>
+        <td><% if (s.poster_image) { %><img class="thumb" src="<%= s.poster_image %>" alt="" loading="lazy"><% } else { %><span class="muted">—</span><% } %></td>
+        <td><strong><%= s.title %></strong><br><small class="muted">/series/<%= s.slug %></small></td>
+        <td><%= s.first_air_year || '—' %></td>
+        <td><%= s.seasons_count %></td>
+        <td><%= s.episodes_count %></td>
+        <td><span class="pill pill-<%= s.publish_status %>"><%= s.publish_status %></span></td>
+        <td><%= H.formatCount(s.view_count) %></td>
+        <td class="actions">
+          <a href="/admin/series/edit/<%= s.id %>" class="btn btn-secondary btn-xs">Edit</a>
+          <a href="/admin/series/<%= s.id %>/seasons" class="btn btn-ghost btn-xs">Seasons</a>
+          <a href="/series/<%= s.slug %>" target="_blank" rel="noopener" class="btn btn-ghost btn-xs">View</a>
+          <button type="button" class="btn btn-danger btn-xs" data-delete="/admin/series/delete/<%= s.id %>">Delete</button>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/pagination', { pg: pg, linkFor: function(p) { return `?q=${encodeURIComponent(filters.q)}&status=${filters.status}&page=${p}`; } }) %>
+<% } else { %>
+<div class="empty-state"><h2>No series found</h2><p>Add your first series to get started.</p><a href="/admin/series/new" class="btn btn-primary">+ Add New Series</a></div>
+<% } %>

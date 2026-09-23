@@ -1,0 +1,26 @@
+<%- include('../partials/breadcrumbs') %>
+<div class="container page-head">
+  <h1><%= genre.name %></h1>
+  <% if (genre.description) { %><p class="page-sub"><%= genre.description %></p><% } %>
+  <div class="type-tabs" role="tablist">
+    <a href="/genre/<%= genre.slug %>" class="<%= activeType === 'all' ? 'active' : '' %>">All</a>
+    <a href="/genre/<%= genre.slug %>?type=movies" class="<%= activeType === 'movies' ? 'active' : '' %>">Movies</a>
+    <a href="/genre/<%= genre.slug %>?type=series" class="<%= activeType === 'series' ? 'active' : '' %>">Series</a>
+  </div>
+</div>
+<div class="container">
+  <p class="result-count"><%= pg.total %> title<%= pg.total == 1 ? '' : 's' %> in <%= genre.name %></p>
+  <% if (items.length) { %>
+    <div class="grid grid-4">
+      <% items.forEach(function(item) { %><%- include('../partials/card', { item: item, showType: activeType === 'all' }) %><% }); %>
+    </div>
+    <%- include('../partials/pagination', { pg: pg, linkFor: function(p) { return '?type=' + activeType + '&page=' + p; } }) %>
+  <% } else { %>
+    <div class="empty-state">
+      <div class="empty-icon">🎭</div>
+      <h2>No <%= genre.name.toLowerCase() %> content yet</h2>
+      <p>Explore other genres or check back soon.</p>
+      <a href="/" class="btn btn-secondary">Browse Home</a>
+    </div>
+  <% } %>
+</div>

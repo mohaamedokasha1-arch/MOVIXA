@@ -1,0 +1,38 @@
+<% /* Expects: item with content_type ('movie'|'series'), optional: showType */ %>
+<%
+  const isMovie = item.content_type === 'movie';
+  const href = isMovie ? '/movie/' + item.slug : '/series/' + item.slug;
+  const year = isMovie ? item.release_year : item.first_air_year;
+  const yearLabel = isMovie ? (year || '') : (item.first_air_year ? (item.last_air_year && item.last_air_year !== item.first_air_year ? item.first_air_year + '–' + item.last_air_year : item.first_air_year) : '');
+%>
+<article class="card">
+  <a class="card-link" href="<%= href %>" aria-label="<%= item.title %>">
+    <div class="card-poster">
+      <% if (item.poster_image) { %>
+        <img src="<%= item.poster_image %>" alt="<%= item.title %> poster" loading="lazy" width="300" height="450">
+      <% } else { %>
+        <div class="card-noimg"><span><%= siteName %></span></div>
+      <% } %>
+      <div class="card-overlay">
+        <% if (item.rating > 0) { %><span class="card-rating">★ <%= Number(item.rating).toFixed(1) %></span><% } %>
+        <% if (yearLabel) { %><span class="card-year"><%= yearLabel %></span><% } %>
+        <% if (typeof showType !== 'undefined' && showType) { %><span class="badge badge-type"><%= isMovie ? 'Movie' : 'Series' %></span><% } %>
+        <span class="card-play" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="11" fill="rgba(229,9,20,.9)"/><path d="M10 8.5v7l5.5-3.5z" fill="#fff"/></svg></span>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3 class="card-title"><%= item.title %></h3>
+      <div class="card-meta">
+        <% if (yearLabel) { %><span><%= yearLabel %></span><% } %>
+        <% if (!isMovie && item.seasons_count) { %><span><%= item.seasons_count %> Season<%= item.seasons_count == 1 ? '' : 's' %></span><% } %>
+        <% if (isMovie && item.runtime) { %><span><%= H.formatRuntime(item.runtime) %></span><% } %>
+        <% if (item.rating > 0) { %><span class="meta-rating">★ <%= Number(item.rating).toFixed(1) %></span><% } %>
+      </div>
+      <% if (item.genres && item.genres.length) { %>
+      <div class="card-genres">
+        <% item.genres.slice(0, 2).forEach(function(g) { %><span class="tag"><%= g.name %></span><% }); %>
+      </div>
+      <% } %>
+    </div>
+  </a>
+</article>

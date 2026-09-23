@@ -1,0 +1,26 @@
+<div class="page-actions"><h1 class="admin-h1">Messages (<%= pg.total %>)</h1></div>
+<% if (items.length) { %>
+<div class="table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>Status</th><th>From</th><th>Subject</th><th>Message</th><th>Date</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% items.forEach(function(m) { %>
+      <tr class="<%= m.is_read ? '' : 'unread' %>">
+        <td><% if (m.is_read) { %><span class="pill">read</span><% } else { %><span class="pill pill-new">new</span><% } %></td>
+        <td><strong><%= m.name %></strong><br><small class="muted"><%= m.email %></small></td>
+        <td><%= m.subject || '—' %></td>
+        <td class="msg-cell"><%= m.message.slice(0, 120) %><% if (m.message.length > 120) { %>…<% } %></td>
+        <td><small><%= H.timeAgo(m.created_at) %></small></td>
+        <td class="actions">
+          <% if (!m.is_read) { %><button type="button" class="btn btn-secondary btn-xs" data-post="/admin/messages/read/<%= m.id %>">Mark Read</button><% } %>
+          <button type="button" class="btn btn-danger btn-xs" data-delete="/admin/messages/delete/<%= m.id %>">Delete</button>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/pagination', { pg: pg, linkFor: function(p) { return `?page=${p}`; } }) %>
+<% } else { %>
+<div class="empty-state"><h2>No messages</h2><p>Contact form submissions will appear here.</p></div>
+<% } %>
