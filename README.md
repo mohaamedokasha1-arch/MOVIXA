@@ -30,7 +30,7 @@ Mobile-first cinematic dark theme · SEO-first (meta, Open Graph, JSON-LD, sitem
 
 ## 🚀 Quick start
 
-**Requirements:** Node.js 18+ (22 recommended). No database server needed.
+**Requirements:** Node.js 22 LTS (22.13.0 or newer within 22.x, required for `node:sqlite` without an experimental flag). No database server needed.
 
 ```bash
 npm install
@@ -113,6 +113,42 @@ data/movixa.db          # SQLite database (gitignored — back this file up!)
 ---
 
 ## 🌍 Deployment
+
+### Railway runtime
+
+`railway.json` explicitly selects the Dockerfile builder. `Dockerfile` uses
+`node:22-bookworm-slim` for **both build and runtime**, installs the lockfile with
+`npm ci`, and starts with `npm start` → `node --no-warnings server.js`.
+The image build prints `MOVIXA runtime: v22.x.x` and checks that `node:sqlite`
+loads without `--experimental-sqlite`; an incompatible runtime fails the build.
+`package.json` and `package-lock.json` require `22.x`; `.nvmrc` and `.node-version`
+also select 22. `nixpacks.toml` is only a fallback for Nixpacks, not used by
+Railpack or this Dockerfile deployment.
+
+To apply and verify this fix on Railway:
+
+1. Deploy the revision containing these files. Verify the service's source
+   repository/branch and root directory point to this application, and its config
+   file is `/railway.json` (relative to the repository root).
+2. Confirm the resolved builder is **Dockerfile**, the Dockerfile path is
+   `Dockerfile`, and the start command is **`npm start`**. Remove stale Node 18
+   overrides such as `RAILPACK_NODE_VERSION`, `NIXPACKS_NODE_VERSION`, or
+   `NODE_VERSION`, and any custom `PATH`/start command that selects an old Node.
+   The Dockerfile itself does not use those version variables.
+3. Trigger a new build of that revision, not a restart of the old image. Confirm
+   the build uses `node:22-bookworm-slim` and prints the runtime/SQLite checks above.
+4. In the running service (`railway ssh`, not `railway run`, which runs locally),
+   verify `node -v` returns `v22.x.x` and
+   `node -e "require('node:sqlite'); console.log('node:sqlite OK')"` succeeds.
+   Check `/healthz` returns `{"ok":true,"service":"movixa"}`.
+
+If deployment logs still report Node 18.20.8, the service is not running the
+intended Dockerfile runtime; check the deployed revision, config source and
+service overrides before treating the incident as resolved. Keep existing
+persistent volumes; this image stores the database at `/app/data/movixa.db`
+and uploads at `/app/public/uploads/`.
+
+### Other Node hosts
 
 Works on any Node host (VPS, Render, Railway, Fly.io, Coolify…). Example with PM2:
 
