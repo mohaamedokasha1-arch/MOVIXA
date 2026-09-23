@@ -29,6 +29,27 @@
     update();
   });
 
+  /* video source selector hints */
+  const vp = document.getElementById('videoProvider');
+  const vg = document.getElementById('videoInputGroup');
+  const vl = document.getElementById('videoInputLabel');
+  const vh = document.getElementById('videoInputHint');
+  function syncVideoHint() {
+    if (!vp || !vg) return;
+    if (vp.value === 'dailymotion') {
+      vg.style.display = '';
+      if (vl) vl.textContent = 'Dailymotion Video ID or Embed URL';
+      if (vh) vh.textContent = 'Paste the Video ID (e.g. x8abc12) or any Dailymotion video / embed URL.';
+    } else if (vp.value === 'custom') {
+      vg.style.display = '';
+      if (vl) vl.textContent = 'Authorized Embed URL';
+      if (vh) vh.textContent = 'Paste an https video URL from YouTube, Vimeo or Dailymotion (watch links work too).';
+    } else {
+      vg.style.display = 'none';
+    }
+  }
+  if (vp) { vp.addEventListener('change', syncVideoHint); syncVideoHint(); }
+
   /* check all */
   const checkAll = document.getElementById('checkAll');
   if (checkAll) {

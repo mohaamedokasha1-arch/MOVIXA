@@ -26,7 +26,7 @@ function cleanRich(html) {
       img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
       iframe: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen', 'title']
     },
-    allowedIframeHostnames: ['www.youtube.com', 'youtube.com', 'player.vimeo.com', 'vimeo.com']
+    allowedIframeHostnames: ['www.youtube.com', 'youtube.com', 'player.vimeo.com', 'vimeo.com', 'www.dailymotion.com', 'dailymotion.com', 'geo.dailymotion.com']
   });
 }
 
@@ -88,6 +88,16 @@ function embedUrl(url) {
     if (host === 'vimeo.com' || host === 'player.vimeo.com') {
       const m = u.pathname.match(/(\d+)/);
       if (m) return `https://player.vimeo.com/video/${m[1]}`;
+    }
+    if (host === 'dailymotion.com' || host === 'geo.dailymotion.com' || host === 'dai.ly') {
+      let id = '';
+      if (host === 'dai.ly') id = (u.pathname.slice(1).split(/[/?#]/)[0] || '');
+      else if (u.pathname.endsWith('player.html')) id = u.searchParams.get('video') || '';
+      else {
+        const m = u.pathname.match(/\/(?:embed\/video|video)\/([^_/?#&]+)/);
+        if (m) id = m[1];
+      }
+      if (/^[A-Za-z0-9]{3,32}$/.test(id)) return `https://www.dailymotion.com/embed/video/${id}`;
     }
   } catch (e) { /* invalid url */ }
   return '';

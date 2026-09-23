@@ -51,6 +51,24 @@
 <% } %>
 
 <div class="container detail-sections">
+  <% if (typeof playerEmbed !== 'undefined' && playerEmbed) { %>
+  <section class="detail-block" id="watch">
+    <h2>Watch Now</h2>
+    <div class="player-wrap" data-player>
+      <iframe src="<%= playerEmbed %>" title="<%= movie.title %> — embedded video player" frameborder="0" loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div class="player-fallback" data-player-fallback hidden>
+      <p><strong>⚠️ The embedded video couldn't be loaded.</strong> It may have been removed, restricted, or temporarily unavailable on the provider's side.</p>
+      <% if (movie.official_watch_url) { %>
+        <a href="<%= movie.official_watch_url %>" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">Try watching on <%= movie.official_source_name || 'the official source' %> →</a>
+      <% } %>
+    </div>
+    <p class="source-note">Streaming directly from the official provider — no files are hosted on <%= siteName %>.</p>
+  </section>
+  <% } %>
+
   <% if (movie.description) { %>
   <section class="detail-block">
     <h2>Storyline</h2>

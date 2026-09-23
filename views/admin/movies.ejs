@@ -42,7 +42,7 @@
         <tr>
           <td><input type="checkbox" name="ids" value="<%= m.id %>" class="row-check"></td>
           <td><% if (m.poster_image) { %><img class="thumb" src="<%= m.poster_image %>" alt="" loading="lazy"><% } else { %><span class="muted">—</span><% } %></td>
-          <td><strong><%= m.title %></strong><br><small class="muted">/movie/<%= m.slug %></small></td>
+          <td><strong><%= m.title %></strong> <% if (m.video_embed_url) { %><span class="pill">▶ embedded</span><% } %><br><small class="muted">/movie/<%= m.slug %></small></td>
           <td><%= m.release_year || '—' %></td>
           <td><span class="pill pill-<%= m.status %>"><%= m.status %></span></td>
           <td><%= m.featured ? '⭐' : '—' %></td>

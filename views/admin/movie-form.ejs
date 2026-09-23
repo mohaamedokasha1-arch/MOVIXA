@@ -51,6 +51,30 @@
       </fieldset>
 
       <fieldset class="form-card">
+        <legend>Video Source (Embedded Player)</legend>
+        <p class="form-note">📺 The movie page streams the video directly from the provider — MOVIXA never downloads, copies or stores video files. Only embed videos you have permission or authorization to display.</p>
+        <div class="form-row">
+          <div class="form-group"><label for="videoProvider">Video Source</label>
+            <select name="video_provider" id="videoProvider">
+              <% videoOptions.forEach(function(o) { %>
+              <option value="<%= o.id %>" <%= movie.video_provider === o.id ? 'selected' : '' %>><%= o.label %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="form-group" id="videoInputGroup"><label for="videoInput" id="videoInputLabel">Video ID or Embed URL</label>
+            <input type="text" name="video_input" id="videoInput" value="<%= movie.video_input || '' %>" maxlength="2000" placeholder="e.g. x8abc12 or https://..." autocomplete="off">
+            <small class="muted" id="videoInputHint"></small>
+          </div>
+        </div>
+        <% if (movie.video_embed_url) { %>
+        <div class="form-group"><label>Current Embed URL (replace above or choose “No embedded player” to remove)</label>
+          <input type="text" value="<%= movie.video_embed_url %>" readonly>
+          <small><a href="<%= movie.video_embed_url %>" target="_blank" rel="noopener">Test embed URL ↗</a></small>
+        </div>
+        <% } %>
+      </fieldset>
+
+      <fieldset class="form-card">
         <legend>Legal Source</legend>
         <p class="form-note">⚠️ Only add content you have rights to distribute, or link to legal official sources.</p>
         <div class="form-row">

@@ -210,6 +210,18 @@ function migrate() {
   CREATE INDEX IF NOT EXISTS idx_genres_slug ON genres(slug);
   CREATE INDEX IF NOT EXISTS idx_pages_slug ON pages(slug);
   `);
+
+  // --- lightweight migrations for existing databases ---
+  ensureColumn('movies', 'video_provider', "TEXT DEFAULT 'none'");
+  ensureColumn('movies', 'video_id', "TEXT DEFAULT ''");
+  ensureColumn('movies', 'video_embed_url', "TEXT DEFAULT ''");
+}
+
+function ensureColumn(table, column, definition) {
+  const cols = db.prepare(`PRAGMA table_info(${table})`).all();
+  if (!cols.some((c) => c.name === column)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
 }
 
 function getSetting(key, fallback = '') {

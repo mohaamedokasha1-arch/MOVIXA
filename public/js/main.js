@@ -133,6 +133,20 @@
   if (trailerClose) trailerClose.addEventListener('click', closeTrailer);
   if (trailerModal) trailerModal.addEventListener('click', (e) => { if (e.target === trailerModal) closeTrailer(); });
 
+  /* embedded player watchdog: if the provider's player never loads
+     (removed/restricted video, network block), show the fallback message
+     instead of leaving a dead black box. The page itself never breaks. */
+  document.querySelectorAll('[data-player] iframe').forEach((frame) => {
+    let loaded = false;
+    frame.addEventListener('load', () => { loaded = true; });
+    setTimeout(() => {
+      if (loaded) return;
+      const section = frame.closest('section');
+      const fb = section ? section.querySelector('[data-player-fallback]') : null;
+      if (fb) fb.hidden = false;
+    }, 12000);
+  });
+
   /* copy link buttons */
   document.querySelectorAll('[data-copy]').forEach((btn) => {
     btn.addEventListener('click', async () => {

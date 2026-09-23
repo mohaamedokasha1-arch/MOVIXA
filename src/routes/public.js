@@ -3,6 +3,7 @@ const express = require('express');
 const { db, getSetting } = require('../db');
 const { setFlash } = require('../middleware');
 const H = require('../helpers');
+const V = require('../video-providers');
 
 const router = express.Router();
 
@@ -209,7 +210,8 @@ router.get('/movie/:slug', (req, res, next) => {
     canonical: base + '/movie/' + movie.slug,
     ogType: 'video.movie', ogImage: movie.og_image || movie.backdrop_image || movie.poster_image,
     jsonLd, crumbs, movie, related,
-    trailerEmbed: H.embedUrl(movie.trailer_url)
+    trailerEmbed: H.embedUrl(movie.trailer_url),
+    playerEmbed: V.safeEmbedUrl(movie.video_embed_url)
   });
 });
 

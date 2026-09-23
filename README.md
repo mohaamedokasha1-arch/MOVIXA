@@ -52,6 +52,23 @@ npm run seed   # re-run migrations + seed (idempotent)
 
 ---
 
+## 📺 Embedded video players
+
+Movies can show a responsive embedded player on their page, streamed directly from the provider — **MOVIXA never downloads, copies or stores video files**.
+
+**Workflow:** Admin → Movies → Add/Edit → **Video Source** → choose:
+- **Dailymotion** — paste the Video ID (e.g. `x8abc12`) or any Dailymotion video/embed URL (`dailymotion.com`, `geo.dailymotion.com` player, `dai.ly` links all work)
+- **Custom Embed** — paste an authorized `https://` video URL from YouTube, Vimeo or Dailymotion (watch links and full `<iframe>` snippets are accepted and normalized to a clean canonical embed URL)
+- **No embedded player** — external watch-link only
+
+The source can be changed or removed anytime from the same form — no code edits. If the provider's player fails to load, the page shows a clear fallback message with a link to the official source instead of breaking.
+
+**Safety:** URLs are validated server-side (HTTPS-only, approved-provider allowlist, ID extraction) and re-validated at render time; only the normalized URL is ever placed in an `iframe src` (escaped), so arbitrary scripts can never be injected. CSP `frame-src` covers YouTube, Vimeo and Dailymotion.
+
+**Adding a provider:** register it in `src/video-providers.js` (`registerProvider(id, { label, hosts, extract, buildEmbed })`), add its player host to the CSP `frameSrc` list in `server.js`, and it becomes available to Custom Embed immediately.
+
+---
+
 ## ⚙️ Configuration (`.env`)
 
 | Variable | Description |

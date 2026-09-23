@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit');
 const { db, getSetting, setSetting } = require('../db');
 const { requireAdmin, requireSuperAdmin, setFlash, upload, trackMedia, UPLOAD_DIR } = require('../middleware');
 const H = require('../helpers');
+const V = require('../video-providers');
 
 const router = express.Router();
 
@@ -181,8 +182,10 @@ function movieFormData(movie = {}) {
       poster_image: '', backdrop_image: '', trailer_url: '',
       official_watch_url: '', official_source_name: '',
       rating: '', featured: 0, status: 'draft', tags: '',
+      video_provider: 'none', video_id: '', video_embed_url: '', video_input: '',
       seo_title: '', seo_description: '', og_image: '', ...movie
     },
+    videoOptions: V.ADMIN_VIDEO_OPTIONS,
     allGenres: db.prepare('SELECT * FROM genres ORDER BY name').all(),
     allPeople: db.prepare('SELECT * FROM people ORDER BY name').all(),
     selectedGenres: movie.id ? db.prepare(`SELECT genre_id FROM content_genres WHERE content_type = 'movie' AND content_id = ?`).all(movie.id).map(r => r.genre_id) : [],
@@ -197,6 +200,8 @@ router.get('/movies/new', requireAdmin, (req, res) => {
 router.get('/movies/edit/:id', requireAdmin, (req, res) => {
   const movie = db.prepare('SELECT * FROM movies WHERE id = ?').get(req.params.id);
   if (!movie) { setFlash(req, 'error', 'Movie not found.'); return res.redirect('/admin/movies'); }
+  // Show the video ID for Dailymotion, otherwise the stored embed URL — editable without code.
+  movie.video_input = (movie.video_provider === 'dailymotion' && movie.video_id) ? movie.video_id : (movie.video_embed_url || '');
   res.render('admin/movie-form', { layout: 'admin/layout', title: 'Edit Movie - MOVIXA Admin', active: 'movies', isEdit: true, ...movieFormData(movie) });
 });
 
@@ -224,6 +229,8 @@ router.post(['/movies/new', '/movies/edit/:id'], requireAdmin, (req, res) => {
     if (b.poster_image && b.poster_image.trim() && !H.isValidUrl(b.poster_image.trim()) && !b.poster_image.startsWith('/')) errors.push('Poster image must be a valid URL.');
     if (b.rating !== '' && b.rating != null && (isNaN(parseFloat(b.rating)) || parseFloat(b.rating) < 0 || parseFloat(b.rating) > 10)) errors.push('Rating must be between 0 and 10.');
     if ((b.short_description || '').length > 200) errors.push('Short description must be 200 characters or less.');
+    const vs = V.parseVideoSource(b.video_provider, b.video_input);
+    if (!vs.ok) errors.push(vs.error);
     if (errors.length) {
       setFlash(req, 'error', errors.join(' '));
       return res.redirect('back');
@@ -246,6 +253,9 @@ router.post(['/movies/new', '/movies/edit/:id'], requireAdmin, (req, res) => {
       trailer_url: (b.trailer_url || '').trim().slice(0, 500),
       official_watch_url: (b.official_watch_url || '').trim().slice(0, 500),
       official_source_name: (b.official_source_name || '').trim().slice(0, 100),
+      video_provider: vs.provider,
+      video_id: vs.videoId || '',
+      video_embed_url: vs.embedUrl || '',
       rating: b.rating === '' || b.rating == null ? 0 : Math.max(0, Math.min(10, parseFloat(b.rating))),
       featured: b.featured ? 1 : 0,
       status: ['draft', 'published', 'archived'].includes(b.status) ? b.status : 'draft',
@@ -259,7 +269,7 @@ router.post(['/movies/new', '/movies/edit/:id'], requireAdmin, (req, res) => {
         if (existing[k] && data[k] !== existing[k]) deleteUploadFile(existing[k]);
       });
       const keys = Object.keys(data).map(k => `${k} = @${k}`).join(', ');
-      db.prepare(`UPDATE movies SET ${keys}, updated_at = datetime('now') WHERE id = ?`).run({ ...data, id: existing.id });
+      db.prepare(`UPDATE movies SET ${keys}, updated_at = datetime('now') WHERE id = @id`).run({ ...data, id: existing.id });
       setGenres('movie', existing.id, b.genre_ids);
       setCast('movie', existing.id, b);
       if (b.add_person_name && b.add_person_name.trim()) {
@@ -376,7 +386,7 @@ router.post(['/series/new', '/series/edit/:id'], requireAdmin, (req, res) => {
     if (isEdit) {
       ['poster_image', 'backdrop_image', 'og_image'].forEach(k => { if (existing[k] && data[k] !== existing[k]) deleteUploadFile(existing[k]); });
       const keys = Object.keys(data).map(k => `${k} = @${k}`).join(', ');
-      db.prepare(`UPDATE series SET ${keys}, updated_at = datetime('now') WHERE id = ?`).run({ ...data, id: existing.id });
+      db.prepare(`UPDATE series SET ${keys}, updated_at = datetime('now') WHERE id = @id`).run({ ...data, id: existing.id });
       setGenres('series', existing.id, b.genre_ids);
       setCast('series', existing.id, b);
       setFlash(req, 'success', 'Series updated successfully!');
@@ -532,10 +542,10 @@ router.post(['/series/:id/season/:seasonId/episodes/new', '/series/:id/season/:s
   if (isEdit) {
     if (existing.thumbnail_image && thumb !== existing.thumbnail_image) deleteUploadFile(existing.thumbnail_image);
     const keys = Object.keys(data).map(k => `${k} = @${k}`).join(', ');
-    db.prepare(`UPDATE episodes SET ${keys}, updated_at = datetime('now') WHERE id = ?`).run({ ...data, id: existing.id });
+    db.prepare(`UPDATE episodes SET ${keys}, updated_at = datetime('now') WHERE id = @id`).run({ ...data, id: existing.id });
     setFlash(req, 'success', 'Episode updated!');
   } else {
-    db.prepare(`INSERT INTO episodes (series_id, season_id, ${Object.keys(data).join(', ')}) VALUES (?, ?, ${Object.keys(data).map(k => '@' + k).join(', ')})`).run({ series_id: show.id, season_id: season.id, ...data });
+    db.prepare(`INSERT INTO episodes (series_id, season_id, ${Object.keys(data).join(', ')}) VALUES (@series_id, @season_id, ${Object.keys(data).map(k => '@' + k).join(', ')})`).run({ series_id: show.id, season_id: season.id, ...data });
     db.prepare('UPDATE seasons SET episode_count = (SELECT COUNT(*) FROM episodes WHERE season_id = ?), updated_at = datetime(\'now\') WHERE id = ?').run(season.id, season.id);
     setFlash(req, 'success', 'Episode created!');
     if (b.save_and_add) return res.redirect(`/admin/series/${show.id}/season/${season.id}/episodes/new`);
