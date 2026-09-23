@@ -1,0 +1,13 @@
+# MOVIXA — pin Node.js 22 (LTS) when Railway builds with the Nixpacks builder.
+# This file is used for BOTH build and runtime (Railway runs the same image).
+#
+# Why the nixpkgsArchive pin? node:sqlite only loads WITHOUT the
+# --experimental-sqlite flag on Node >= 22.13, and this app starts with plain
+# `node server.js`. Nixpacks' default archive can resolve "22" to an older
+# 22.x (e.g. 22.11.0) that would crash with the same ERR_UNKNOWN_BUILTIN_MODULE
+# error, so we pin an archive whose nodejs_22 is 22.17.0 (2025-07-10).
+# Archive <-> version mapping:
+# https://github.com/NixOS/nixpkgs/commit/373d6a14e460f2a1fc8859aeeda11d955487ed37
+[phases.setup]
+nixPkgs = ["nodejs_22"]
+nixpkgsArchive = "373d6a14e460f2a1fc8859aeeda11d955487ed37"

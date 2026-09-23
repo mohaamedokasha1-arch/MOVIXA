@@ -10,7 +10,7 @@
     "seed": "node --no-warnings src/seed.js"
   },
   "engines": {
-    "node": ">=18"
+    "node": "22.x"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
