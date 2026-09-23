@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MOVIXA — Discover. Watch. Legally.</title>
+  <meta name="description" content="MOVIXA is a legal streaming platform for movies and series. Discover titles linked to their official licensed sources.">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta property="og:site_name" content="MOVIXA">
+  <meta property="og:title" content="MOVIXA — Discover. Watch. Legally.">
+  <meta property="og:description" content="Legal streaming for movies & series. Official sources only.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/og-default.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="/">
+        <span class="logo-text">MOVIXA</span>
+      </a>
+      <nav class="main-nav" aria-label="Primary">
+        <a href="/" class="active">Home</a>
+        <a href="#movies">Movies</a>
+        <a href="#series">Series</a>
+        <a href="#genres">Genres</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-label="Featured content">
+      <div class="hero-slider" id="heroSlider">
+        <div class="hero-slide active" data-index="0">
+          <div class="hero-bg">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Big_buck_bunny_poster_big.jpg/800px-Big_buck_bunny_poster_big.jpg" alt="" fetchpriority="high">
+            <div class="hero-gradient"></div>
+          </div>
+          <div class="container hero-content">
+            <div class="hero-badges">
+              <span class="badge badge-featured">Featured</span>
+              <span class="badge badge-type">Movie</span>
+            </div>
+            <h1 class="hero-title">Big Buck Bunny</h1>
+            <div class="hero-meta">
+              <span>2008</span>
+              <span>10 min</span>
+              <span class="meta-rating">★ 8.1/10</span>
+            </div>
+            <p class="hero-desc">A giant rabbit is as gentle as can be — until three bullying rodents push him too far. An open-licensed Blender Foundation short, streamed from its official source.</p>
+            <div class="hero-actions">
+              <a href="https://www.youtube.com/watch?v=aqz-KE-bpKQ" class="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer">▶ Watch Now</a>
+              <a href="#movies" class="btn btn-secondary btn-lg">More Info</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="movies">
+      <div class="section-head">
+        <h2>Latest Movies</h2>
+      </div>
+      <div class="grid grid-4" id="movieGrid"></div>
+    </section>
+
+    <section class="section container" id="series">
+      <div class="section-head">
+        <h2>Popular Series</h2>
+      </div>
+      <div class="grid grid-4" id="seriesGrid"></div>
+    </section>
+
+    <section class="section container" id="genres">
+      <div class="section-head"><h2>Browse by Genre</h2></div>
+      <div class="grid grid-genres">
+        <a class="genre-card" href="#movies"><div class="genre-card-body"><h3>Animation</h3><span>Open shorts</span></div></a>
+        <a class="genre-card" href="#movies"><div class="genre-card-body"><h3>Adventure</h3><span>Legal titles</span></div></a>
+        <a class="genre-card" href="#movies"><div class="genre-card-body"><h3>Sci-Fi</h3><span>Official sources</span></div></a>
+        <a class="genre-card" href="#movies"><div class="genre-card-body"><h3>Family</h3><span>Safe to stream</span></div></a>
+      </div>
+    </section>
+
+    <section class="section container">
+      <div class="legal-banner">
+        <div>
+          <h2>100% Legal Streaming</h2>
+          <p>Every title on MOVIXA is owned by us, licensed for distribution, or linked to its official legal source. Creators get credit — you get peace of mind.</p>
+        </div>
+        <a href="#movies" class="btn btn-secondary">Browse Catalog</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <div class="footer-bottom-inner">
+        <span>© MOVIXA. Legal streaming only.</span>
+        <span>Discover. Watch. Legally.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
